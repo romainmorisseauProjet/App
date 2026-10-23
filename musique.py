@@ -14,7 +14,10 @@ import time
 import pygame
 from mutagen import File as MutagenFile
 
-pygame.mixer.init()
+try:
+    pygame.mixer.init()
+except Exception as e:
+    print("Mode silencieux activé (aucun périphérique audio sur le serveur) :", e)
 
 EXTENSIONS_AUDIO = {".mp3", ".wav", ".ogg", ".flac", ".m4a"}
 EXTENSIONS_VIDEO = {".mp4", ".mkv", ".webm"}
