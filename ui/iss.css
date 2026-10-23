@@ -1,0 +1,114 @@
+/* --- Module Station spatiale (ISS) --- */
+/* Les variables de couleur viennent de style.css, chargé avant celui-ci. */
+
+.iss-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 18px 26px 28px; gap: 16px; overflow: auto; }
+
+.iss-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.iss-title { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 600; }
+.iss-sub { font-size: 12.5px; color: var(--text-faint); margin-top: 3px; }
+.iss-pill {
+  display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+  padding: 7px 12px; border-radius: 20px; font-size: 12px;
+  border: 1px solid var(--border-line); background: var(--bg-panel); color: var(--text-dim);
+}
+.iss-pill-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); }
+.iss-pill.live { color: var(--accent-cyan); border-color: rgba(95,217,255,0.3); }
+.iss-pill.live .iss-pill-dot { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: pulse-dot 2s ease-in-out infinite; }
+.iss-pill.err { color: #ff5470; border-color: rgba(255,84,112,0.3); }
+.iss-pill.err .iss-pill-dot { background: #ff5470; }
+
+/* Carte du monde */
+.iss-map-card {
+  position: relative; border: 1px solid var(--border-line); border-radius: 14px; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #0b1a33, #060c18 75%);
+  box-shadow: 0 0 30px rgba(47,127,255,0.08) inset;
+}
+.iss-svg { display: block; width: 100%; height: auto; }
+.iss-grille { stroke: rgba(95,217,255,0.07); stroke-width: 0.5; fill: none; }
+.iss-grille-equateur { stroke: rgba(95,217,255,0.16); stroke-width: 0.6; }
+.iss-terres { fill: #16294a; stroke: rgba(95,217,255,0.28); stroke-width: 0.4; stroke-linejoin: round; }
+.iss-nuit { fill: rgba(2,5,14,0.55); }
+.iss-trace-passe { fill: none; stroke: rgba(160,180,220,0.35); stroke-width: 1; stroke-dasharray: 3 3; }
+.iss-trace-futur { fill: none; stroke: #5fd9ff; stroke-width: 1.3; stroke-dasharray: 5 3; opacity: 0.85; filter: drop-shadow(0 0 3px rgba(95,217,255,0.7)); }
+.iss-empreinte { fill: rgba(95,217,255,0.08); stroke: rgba(95,217,255,0.45); stroke-width: 0.7; }
+.iss-lieu-marque { fill: #ffd25f; stroke: #050810; stroke-width: 1; filter: drop-shadow(0 0 4px rgba(255,210,95,0.8)); }
+.iss-lieu-etiquette, .iss-lieu-contour { font-family: 'Inter', sans-serif; font-size: 8.5px; }
+.iss-lieu-etiquette { fill: #ffd25f; }
+.iss-lieu-contour { fill: none; stroke: #050810; stroke-width: 2.5px; stroke-linejoin: round; }
+.iss-sonde-halo { fill: rgba(95,217,255,0.25); transform-box: fill-box; transform-origin: center; animation: issPulse 2.4s ease-out infinite; }
+@keyframes issPulse { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
+.iss-sonde-coeur { fill: #fff; stroke: #5fd9ff; stroke-width: 2; filter: drop-shadow(0 0 5px #5fd9ff); }
+.iss-legende {
+  position: absolute; left: 12px; bottom: 10px; display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 10.5px; color: var(--text-faint);
+}
+.iss-legende span { display: inline-flex; align-items: center; gap: 5px; }
+.iss-legende i { display: inline-block; width: 14px; height: 0; border-top: 1.5px dashed; }
+
+/* Tuiles de télémétrie */
+.iss-tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 10px; }
+.iss-tuile { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 12px 14px; }
+.iss-tuile-label { font-size: 11px; color: var(--text-faint); letter-spacing: 0.03em; }
+.iss-tuile-valeur { font-family: 'Chakra Petch', sans-serif; font-size: 19px; font-weight: 600; margin-top: 4px; color: var(--text-bright); }
+.iss-tuile-valeur small { font-size: 12px; font-weight: 500; color: var(--text-dim); margin-left: 3px; }
+.iss-tuile-valeur.cyan { color: var(--accent-cyan); text-shadow: 0 0 14px rgba(95,217,255,0.35); }
+
+/* Cartes d'information */
+.iss-bas { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; }
+.iss-carte { background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 14px; padding: 16px 18px; }
+.iss-carte-titre { font-family: 'Chakra Petch', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.iss-carte-sous { font-size: 12px; color: var(--text-faint); margin-bottom: 12px; }
+
+.iss-recherche { position: relative; margin-bottom: 12px; }
+.iss-recherche input {
+  width: 100%; background: var(--bg-panel-2); border: 1px solid var(--border-line); border-radius: 8px;
+  padding: 10px 12px; color: var(--text-bright); font-family: inherit; font-size: 13.5px; outline: none;
+}
+.iss-recherche input:focus { border-color: var(--border-glow); }
+.iss-recherche input::placeholder { color: var(--text-faint); }
+.iss-suggestions {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 10;
+  background: var(--bg-panel-2); border: 1px solid var(--border-line); border-radius: 10px;
+  overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+.iss-suggestions.hidden { display: none; }
+.iss-suggestion { padding: 10px 14px; cursor: pointer; font-size: 13.5px; border-bottom: 1px solid var(--border-line); transition: background 0.15s; }
+.iss-suggestion:last-child { border-bottom: none; }
+.iss-suggestion:hover { background: rgba(47,127,255,0.1); }
+.iss-suggestion .sub { color: var(--text-faint); font-size: 11.5px; margin-top: 2px; }
+.iss-suggestion-vide { padding: 14px; font-size: 13px; color: var(--text-faint); }
+
+.iss-statut {
+  padding: 12px 14px; border-radius: 10px; font-size: 13px; line-height: 1.45;
+  background: var(--bg-panel-2); border: 1px solid var(--border-line); color: var(--text-dim); margin-bottom: 14px;
+}
+.iss-statut strong { color: var(--text-bright); font-weight: 600; }
+.iss-statut.visible {
+  color: var(--text-bright); border-color: rgba(95,217,255,0.5);
+  background: linear-gradient(135deg, rgba(47,127,255,0.16), rgba(139,92,246,0.14));
+  box-shadow: 0 0 20px rgba(47,127,255,0.2);
+}
+
+.iss-passages-titre { font-size: 12px; color: var(--text-faint); letter-spacing: 0.03em; margin-bottom: 8px; }
+.iss-passage {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; background: var(--bg-panel-2); border: 1px solid var(--border-line); margin-bottom: 7px;
+}
+.iss-passage:first-of-type { border-color: rgba(95,217,255,0.35); }
+.iss-passage-quand { font-size: 13px; color: var(--text-bright); text-transform: capitalize; }
+.iss-passage-relatif { font-size: 11.5px; color: var(--accent-cyan); margin-top: 2px; }
+.iss-passage-droite { text-align: right; font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+.iss-passage-droite b { font-family: 'Chakra Petch', sans-serif; font-weight: 600; color: var(--text-bright); }
+.iss-vide { font-size: 13px; color: var(--text-faint); padding: 8px 2px; }
+
+/* Équipage */
+.iss-equipage { display: flex; flex-wrap: wrap; gap: 8px; }
+.iss-astronaute {
+  display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 8px; border-radius: 20px;
+  background: var(--bg-panel-2); border: 1px solid var(--border-line); font-size: 12.5px;
+}
+.iss-astronaute-ini {
+  width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #2f7fff, #8b5cf6); color: #fff; font-size: 10.5px; font-weight: 600;
+}
+.iss-astronaute small { color: var(--text-faint); margin-left: 2px; }

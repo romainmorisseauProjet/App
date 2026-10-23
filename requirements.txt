@@ -1,0 +1,16 @@
+pywebview
+faster-whisper
+sounddevice
+numpy
+Pillow
+PyMuPDF
+pdf2docx
+pypdf
+python-pptx
+feedparser
+pygame-ce
+mutagen
+yt-dlp
+requests
+sgp4
+sympy

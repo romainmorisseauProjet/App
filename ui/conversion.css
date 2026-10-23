@@ -1,0 +1,73 @@
+/* --- Module Conversion de fichiers --- */
+/* Ce fichier ne contient QUE les styles de l'onglet Conversion.
+   Les variables de couleur viennent de style.css, chargé avant celui-ci. */
+
+.conv-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 18px 26px 24px; gap: 16px; overflow: auto; }
+
+.conv-head { display: flex; flex-direction: column; }
+.conv-title { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 600; }
+.conv-sub { font-size: 12.5px; color: var(--text-faint); margin-top: 3px; }
+
+.conv-tabs { display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--border-line); padding-bottom: 14px; }
+.conv-tab {
+  padding: 9px 14px; border-radius: 8px; border: 1px solid transparent; background: none;
+  color: var(--text-dim); font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.18s;
+}
+.conv-tab:hover { color: var(--text-bright); background: rgba(95,217,255,0.05); }
+.conv-tab.active { color: var(--accent-cyan); background: rgba(47,127,255,0.1); border-color: rgba(95,217,255,0.25); }
+
+.conv-panel { display: flex; flex-direction: column; gap: 14px; max-width: 560px; }
+.conv-panel.hidden { display: none; }
+.conv-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin: 0; }
+
+.conv-pick-btn {
+  display: flex; align-items: center; justify-content: center; gap: 9px; padding: 13px 16px;
+  background: var(--bg-panel); border: 1px dashed var(--border-line); border-radius: 12px;
+  color: var(--text-bright); font-family: inherit; font-size: 13.5px; cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+}
+.conv-pick-btn svg { width: 18px; height: 18px; color: var(--accent-cyan); flex-shrink: 0; }
+.conv-pick-btn:hover { border-color: var(--border-glow); background: rgba(47,127,255,0.06); }
+
+.conv-filelist { display: flex; flex-direction: column; gap: 6px; }
+.conv-file-chip {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 14px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 9px;
+  font-size: 13px; color: var(--text-bright);
+}
+.conv-file-chip .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-file-chip .order-btn, .conv-file-chip .remove-btn {
+  width: 22px; height: 22px; border-radius: 6px; border: none; background: rgba(255,255,255,0.06);
+  color: var(--text-faint); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px; line-height: 1; flex-shrink: 0; transition: all 0.15s;
+}
+.conv-file-chip .order-btn:hover { background: rgba(47,127,255,0.2); color: var(--accent-cyan); }
+.conv-file-chip .order-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+.conv-file-chip .remove-btn:hover { background: rgba(255,84,112,0.2); color: #ff5470; }
+
+.conv-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--text-dim); max-width: 260px; }
+.conv-option select {
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 8px;
+  padding: 7px 10px; color: var(--text-bright); font-family: inherit; font-size: 13px; cursor: pointer; outline: none;
+}
+.conv-option select:focus { border-color: var(--border-glow); }
+
+.conv-action-btn {
+  align-self: flex-start; padding: 11px 20px; border-radius: 10px; border: 1px solid var(--accent-blue);
+  background: var(--accent-blue); color: #fff; font-family: inherit; font-size: 13.5px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s;
+}
+.conv-action-btn:hover:not(:disabled) { box-shadow: 0 0 18px rgba(47,127,255,0.4); }
+.conv-action-btn:disabled { opacity: 0.35; cursor: not-allowed; background: var(--bg-panel-2); border-color: var(--border-line); color: var(--text-faint); }
+.conv-action-btn.loading { opacity: 0.7; cursor: wait; display: inline-flex; align-items: center; gap: 8px; }
+
+.conv-result { font-size: 13px; line-height: 1.6; min-height: 0; }
+.conv-result:empty { display: none; }
+.conv-result.ok { color: var(--accent-cyan); display: flex; flex-direction: column; gap: 8px; }
+.conv-result.error { color: #ff5470; }
+.conv-open-folder-btn {
+  align-self: flex-start; padding: 7px 13px; border-radius: 8px; border: 1px solid rgba(95,217,255,0.3);
+  background: rgba(47,127,255,0.1); color: var(--accent-cyan); font-family: inherit; font-size: 12.5px;
+  cursor: pointer; transition: all 0.18s;
+}
+.conv-open-folder-btn:hover { background: rgba(47,127,255,0.2); }

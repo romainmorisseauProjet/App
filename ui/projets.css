@@ -1,0 +1,207 @@
+/* --- Module Projets --- */
+/* Les variables de couleur viennent de style.css, chargé avant celui-ci.
+   --prj-couleur est posée par le JS sur le projet ouvert : la jauge, les
+   cases cochées et le pourcentage prennent la couleur du projet. */
+
+.prj-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 18px 26px 22px; gap: 14px; }
+.prj-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; }
+
+.prj-col, .prj-main {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 14px;
+}
+
+/* ---- Colonne de gauche ---- */
+.prj-col-tete { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 10px 16px; }
+.prj-col-titre { font-family: 'Chakra Petch', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; }
+.prj-ajout-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(95,217,255,0.3);
+  background: rgba(47,127,255,0.12); color: var(--accent-cyan); font-size: 18px; line-height: 1;
+  cursor: pointer; transition: all 0.18s;
+}
+.prj-ajout-btn:hover { background: rgba(47,127,255,0.24); box-shadow: 0 0 14px rgba(47,127,255,0.3); }
+
+.prj-nouveau { padding: 0 12px 10px; }
+.prj-nouveau.hidden { display: none; }
+.prj-nouveau input, .prj-tache-input {
+  width: 100%; background: var(--bg-panel-2); border: 1px solid var(--border-glow); border-radius: 8px;
+  padding: 10px 12px; color: var(--text-bright); font-family: inherit; font-size: 13.5px; outline: none;
+}
+.prj-nouveau input::placeholder, .prj-tache-input::placeholder { color: var(--text-faint); }
+.prj-tache-input { border-color: var(--border-line); margin-bottom: 12px; }
+.prj-tache-input:focus { border-color: var(--border-glow); }
+
+.prj-liste { flex: 1; min-height: 0; overflow-y: auto; padding: 0 8px 10px; display: flex; flex-direction: column; gap: 3px; }
+.prj-item {
+  padding: 11px 12px 10px; border-radius: 10px; cursor: pointer; border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.prj-item:hover { background: rgba(95,217,255,0.05); }
+.prj-item.actif { background: rgba(47,127,255,0.1); border-color: rgba(95,217,255,0.25); }
+.prj-item-ligne { display: flex; align-items: center; gap: 9px; }
+.prj-point { width: 9px; height: 9px; border-radius: 50%; background: var(--c); box-shadow: 0 0 8px var(--c); flex-shrink: 0; }
+.prj-item-nom { flex: 1; min-width: 0; font-size: 13.5px; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prj-item-pct { font-family: 'Chakra Petch', sans-serif; font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
+.prj-item.fini .prj-item-pct { color: var(--c); }
+.prj-mini { height: 3px; border-radius: 2px; background: var(--border-line); margin-top: 9px; overflow: hidden; }
+.prj-mini i { display: block; height: 100%; width: 0; background: var(--c); box-shadow: 0 0 6px var(--c); transition: width 0.8s cubic-bezier(.22,.9,.3,1); }
+
+/* ---- Zone principale ---- */
+.prj-main { overflow: hidden; }
+.prj-vide { margin: auto; text-align: center; max-width: 340px; padding: 30px 20px; }
+.prj-vide-titre { font-family: 'Chakra Petch', sans-serif; font-size: 17px; margin-bottom: 8px; }
+.prj-vide-texte { font-size: 13px; color: var(--text-faint); line-height: 1.55; }
+.prj-vide-texte b { color: var(--accent-cyan); }
+.prj-vide.hidden, .prj-contenu.hidden { display: none; }
+
+.prj-contenu { --prj-couleur: var(--accent-cyan); flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 18px 20px 18px; gap: 14px; overflow-y: auto; }
+
+.prj-entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.prj-nom {
+  flex: 1; min-width: 0; background: none; border: 1px solid transparent; border-radius: 8px;
+  padding: 4px 8px; margin-left: -8px; color: var(--text-bright);
+  font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 600; outline: none; transition: border-color 0.15s;
+}
+.prj-nom:hover { border-color: var(--border-line); }
+.prj-nom:focus { border-color: var(--border-glow); background: var(--bg-panel-2); }
+.prj-suppr-btn {
+  flex-shrink: 0; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border-line); background: none;
+  color: var(--text-faint); font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.18s;
+}
+.prj-suppr-btn:hover { color: #ff5470; border-color: rgba(255,84,112,0.4); }
+.prj-suppr-btn.confirme { color: #fff; background: rgba(255,84,112,0.85); border-color: #ff5470; }
+
+/* ---- La jauge d'avancement ---- */
+.prj-avancement { background: var(--bg-panel-2); border: 1px solid var(--border-line); border-radius: 12px; padding: 16px 18px 16px; }
+.prj-av-haut { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.prj-pct {
+  font-family: 'Chakra Petch', sans-serif; font-size: 40px; font-weight: 600; line-height: 1;
+  color: var(--prj-couleur); text-shadow: 0 0 22px var(--prj-couleur); min-width: 92px;
+}
+.prj-av-detail { font-size: 13px; color: var(--text-dim); flex: 1; }
+.prj-fini {
+  display: none; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  color: #06101f; background: var(--prj-couleur); box-shadow: 0 0 16px var(--prj-couleur);
+}
+.prj-contenu.fini .prj-fini { display: inline-block; animation: prjApparait 0.5s cubic-bezier(.2,1.4,.4,1); }
+@keyframes prjApparait { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.prj-barre { position: relative; height: 12px; border-radius: 7px; background: var(--bg-void); border: 1px solid var(--border-line); }
+.prj-barre-remplie {
+  position: absolute; left: 0; top: -1px; bottom: -1px; width: 0; min-width: 0; border-radius: 7px;
+  background-color: var(--prj-couleur);
+  background-image: linear-gradient(90deg, rgba(0,0,0,0.32), rgba(255,255,255,0.3));
+  box-shadow: 0 0 14px var(--prj-couleur);
+  transition: width 0.9s cubic-bezier(.22,.9,.3,1);
+}
+.prj-jalon { position: absolute; top: 2px; bottom: 2px; width: 1px; background: rgba(255,255,255,0.14); pointer-events: none; }
+.prj-barre.celebre { animation: prjCelebre 1.1s ease-out; }
+@keyframes prjCelebre {
+  0% { box-shadow: 0 0 0 0 var(--prj-couleur); }
+  100% { box-shadow: 0 0 0 16px transparent; }
+}
+
+.prj-manuel { margin-top: 14px; display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--text-faint); }
+.prj-manuel.hidden { display: none; }
+.prj-manuel span { flex-shrink: 0; }
+.prj-manuel input[type="range"] {
+  -webkit-appearance: none; appearance: none; flex: 1; height: 4px; border-radius: 2px; background: var(--border-line); outline: none; cursor: pointer;
+}
+.prj-manuel input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--prj-couleur); box-shadow: 0 0 8px var(--prj-couleur); cursor: pointer;
+}
+
+/* ---- Onglets Notes / Tâches ---- */
+.prj-onglets { display: flex; gap: 6px; border-bottom: 1px solid var(--border-line); }
+.prj-onglet {
+  padding: 9px 16px; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  color: var(--text-dim); font-family: inherit; font-size: 13.5px; cursor: pointer; transition: color 0.15s, border-color 0.15s;
+}
+.prj-onglet:hover { color: var(--text-bright); }
+.prj-onglet.active { color: var(--prj-couleur); border-bottom-color: var(--prj-couleur); }
+.prj-onglet-compte { font-size: 11px; color: var(--text-faint); margin-left: 4px; }
+
+.prj-vue { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.prj-vue.hidden { display: none; }
+
+/* ---- Notes : pages + éditeur ---- */
+.prj-pages-ligne { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.prj-pages { display: flex; gap: 6px; overflow-x: auto; flex: 1; min-width: 0; padding-bottom: 2px; }
+.prj-page-tab {
+  flex-shrink: 0; max-width: 170px; padding: 6px 13px; border-radius: 16px; border: 1px solid var(--border-line);
+  background: none; color: var(--text-dim); font-family: inherit; font-size: 12.5px; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s;
+}
+.prj-page-tab:hover { color: var(--text-bright); border-color: var(--border-glow); }
+.prj-page-tab.actif { color: var(--prj-couleur); border-color: var(--prj-couleur); background: rgba(255,255,255,0.03); }
+.prj-page-ajout { padding: 6px 12px; font-size: 14px; line-height: 1; }
+.prj-page-suppr {
+  flex-shrink: 0; background: none; border: none; color: var(--text-faint); font-family: inherit; font-size: 11.5px;
+  cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: color 0.15s;
+}
+.prj-page-suppr:hover { color: #ff5470; }
+.prj-page-suppr.confirme { color: #fff; background: rgba(255,84,112,0.85); }
+
+.prj-page-titre {
+  background: none; border: 1px solid transparent; border-radius: 8px; padding: 4px 8px; margin: 0 0 8px -8px;
+  color: var(--text-bright); font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 600; outline: none; width: 100%;
+}
+.prj-page-titre:hover { border-color: var(--border-line); }
+.prj-page-titre:focus { border-color: var(--border-glow); background: var(--bg-panel-2); }
+.prj-page-titre::placeholder { color: var(--text-faint); }
+
+.prj-barre-outils { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.prj-tb {
+  min-width: 32px; height: 30px; padding: 0 9px; border-radius: 7px; border: 1px solid transparent; background: none;
+  color: var(--text-dim); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+}
+.prj-tb:hover { color: var(--text-bright); background: rgba(95,217,255,0.08); border-color: var(--border-line); }
+.prj-tb-sep { width: 1px; height: 18px; background: var(--border-line); margin: 0 6px; }
+.prj-sauvegarde { margin-left: auto; font-size: 11.5px; color: var(--text-faint); }
+.prj-sauvegarde.erreur { color: #ff5470; }
+
+.prj-editeur {
+  flex: 1; min-height: 240px; overflow-y: auto; padding: 16px 18px;
+  background: var(--bg-panel-2); border: 1px solid var(--border-line); border-radius: 12px; outline: none;
+  font-size: 14px; line-height: 1.65; color: var(--text-bright); transition: border-color 0.15s;
+}
+.prj-editeur:focus { border-color: var(--border-glow); box-shadow: 0 0 0 1px rgba(47,127,255,0.2); }
+.prj-editeur[data-vide="1"]::before { content: attr(data-placeholder); color: var(--text-faint); float: left; height: 0; pointer-events: none; }
+.prj-editeur p, .prj-editeur div { margin: 0 0 6px; }
+.prj-editeur h2, .prj-editeur h3 { font-family: 'Chakra Petch', sans-serif; font-weight: 600; margin: 16px 0 6px; color: var(--prj-couleur); }
+.prj-editeur h2 { font-size: 19px; }
+.prj-editeur h3 { font-size: 16px; }
+.prj-editeur ul, .prj-editeur ol { margin: 4px 0 8px; padding-left: 24px; }
+.prj-editeur li { margin: 3px 0; }
+.prj-editeur b, .prj-editeur strong { font-weight: 600; color: #fff; }
+
+/* ---- Tâches ---- */
+.prj-taches { overflow-y: auto; min-height: 0; padding-bottom: 6px; }
+.prj-tache {
+  display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 10px; margin-bottom: 7px;
+  background: var(--bg-panel-2); border: 1px solid var(--border-line); transition: border-color 0.15s;
+}
+.prj-tache:hover { border-color: var(--border-glow); }
+.prj-check {
+  width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border-glow); background: none; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: transparent; cursor: pointer; transition: all 0.18s; padding: 0;
+}
+.prj-check svg { width: 13px; height: 13px; }
+.prj-check:hover { border-color: var(--prj-couleur); }
+.prj-tache.fait .prj-check { background: var(--prj-couleur); border-color: var(--prj-couleur); color: #06101f; box-shadow: 0 0 10px var(--prj-couleur); }
+.prj-tache-texte { flex: 1; min-width: 0; background: none; border: none; outline: none; color: var(--text-bright); font-family: inherit; font-size: 13.5px; }
+.prj-tache.fait .prj-tache-texte { color: var(--text-faint); text-decoration: line-through; }
+.prj-tache-suppr {
+  opacity: 0; background: none; border: none; color: var(--text-faint); font-size: 16px; line-height: 1; cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: all 0.15s;
+}
+.prj-tache:hover .prj-tache-suppr, .prj-tache-suppr:focus-visible { opacity: 1; }
+.prj-tache-suppr:hover { color: #ff5470; }
+.prj-vide-liste { color: var(--text-faint); font-size: 13px; line-height: 1.55; padding: 18px 4px; text-align: center; }
+
+@media (max-width: 900px) {
+  .prj-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .prj-col { max-height: 210px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prj-barre-remplie, .prj-mini i { transition: none; }
+}

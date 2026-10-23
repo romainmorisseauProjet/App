@@ -1,0 +1,200 @@
+/* --- Module Calcul --- */
+/* Ce fichier ne contient QUE les styles de l'onglet Calcul.
+   Les variables de couleur viennent de style.css, chargé avant celui-ci. */
+
+.calc-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 18px 26px 32px; gap: 14px; overflow: auto; }
+.calc-wrap > * { width: 100%; max-width: 780px; flex-shrink: 0; }
+.calc-wrap .hidden { display: none !important; }
+
+/* En-tête */
+.calc-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin-top: 4px; }
+.calc-title { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 600; }
+.calc-sub { font-size: 12.5px; color: var(--text-faint); margin-top: 3px; }
+.calc-head-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Interrupteur « Détails » */
+.calc-switch { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+.calc-switch input { display: none; }
+.calc-switch-track {
+  width: 34px; height: 19px; border-radius: 10px; background: var(--bg-panel-2); border: 1px solid var(--border-line);
+  position: relative; transition: background 0.2s, border-color 0.2s;
+}
+.calc-switch-track::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--text-dim); transition: transform 0.2s, background 0.2s;
+}
+.calc-switch input:checked + .calc-switch-track { background: rgba(47,127,255,0.25); border-color: var(--border-glow); }
+.calc-switch input:checked + .calc-switch-track::after { transform: translateX(15px); background: var(--accent-cyan); }
+.calc-switch-label { font-size: 12.5px; color: var(--text-dim); }
+
+/* Pastille IA */
+.calc-ia-pill {
+  display: flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 999px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); color: var(--text-dim);
+  font-family: 'Chakra Petch', sans-serif; font-size: 12px; letter-spacing: 0.06em; cursor: pointer; transition: all 0.18s;
+}
+.calc-ia-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); }
+.calc-ia-pill:hover { border-color: var(--border-glow); color: var(--text-bright); }
+.calc-ia-pill.actif::before { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.7); }
+
+.calc-ia-config {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; padding: 14px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px;
+}
+.calc-ia-config .calc-field { flex: 1; min-width: 180px; }
+.calc-ia-etat { flex-basis: 100%; font-size: 12px; color: var(--text-faint); }
+
+/* Barre de calcul */
+.calc-bar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 10px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 14px;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.calc-bar:focus-within { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(47,127,255,0.18); }
+.calc-bar.drop { border-color: var(--accent-cyan); box-shadow: 0 0 26px rgba(95,217,255,0.3); }
+.calc-bar input[type="text"] {
+  flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: var(--text-bright);
+  font-family: 'Chakra Petch', sans-serif; font-size: 17px; padding: 8px 4px;
+}
+.calc-bar input::placeholder { color: var(--text-faint); font-family: 'Inter', sans-serif; font-size: 13.5px; }
+.calc-icon-btn, .calc-go {
+  width: 40px; height: 40px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; cursor: pointer; font-family: 'Chakra Petch', sans-serif; transition: all 0.18s;
+}
+.calc-icon-btn { background: none; border: 1px solid var(--border-line); color: var(--accent-cyan); }
+.calc-icon-btn svg { width: 18px; height: 18px; }
+.calc-icon-btn:hover { border-color: var(--border-glow); box-shadow: 0 0 14px rgba(95,217,255,0.2); }
+.calc-go { background: rgba(47,127,255,0.18); border: 1px solid var(--border-glow); color: var(--accent-cyan); font-size: 20px; font-weight: 600; }
+.calc-go:hover { background: rgba(47,127,255,0.32); box-shadow: 0 0 16px rgba(47,127,255,0.35); }
+.calc-go:disabled { opacity: 0.5; cursor: wait; }
+
+/* Photo jointe */
+.calc-photo {
+  display: flex; align-items: center; gap: 12px; padding: 8px 10px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px;
+}
+.calc-photo img { height: 64px; max-width: 160px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-line); }
+.calc-photo .txt { flex: 1; font-size: 12.5px; color: var(--text-dim); }
+.calc-photo button {
+  width: 26px; height: 26px; border-radius: 7px; border: none; background: rgba(255,255,255,0.06);
+  color: var(--text-dim); cursor: pointer; font-size: 13px;
+}
+.calc-photo button:hover { background: rgba(255,84,112,0.2); color: #ff5470; }
+
+/* Résultat */
+.calc-result {
+  padding: 8px 18px 10px; border-radius: 14px; background: linear-gradient(180deg, rgba(47,127,255,0.08), rgba(10,17,32,0.9));
+  border: 1px solid rgba(95,217,255,0.28); box-shadow: 0 0 24px rgba(47,127,255,0.12);
+}
+.calc-result.erreur { border-color: rgba(255,84,112,0.35); box-shadow: none; background: var(--bg-panel); }
+.calc-erreur { color: #ff5470; font-size: 13px; padding: 8px 0; }
+.calc-chargement { color: var(--text-faint); font-size: 13px; padding: 8px 0; }
+
+.calc-ligne {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: 16px;
+  padding: 8px 0; border-top: 1px solid var(--border-line); cursor: pointer;
+}
+.calc-ligne:first-child { border-top: none; }
+.calc-ligne .lab { font-size: 13px; color: var(--text-dim); }
+.calc-ligne .val {
+  font-family: 'Chakra Petch', sans-serif; font-size: 20px; color: var(--accent-cyan);
+  margin-left: auto; text-align: right; overflow-wrap: anywhere; transition: color 0.2s;
+}
+.calc-ligne.seule .val { font-size: 30px; margin-left: 0; text-align: left; }
+.calc-ligne.copie .val { color: #7dffb0; }
+.calc-ligne:hover .val { text-shadow: 0 0 12px rgba(95,217,255,0.35); }
+.calc-formule { flex-basis: 100%; font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+.calc-explication {
+  white-space: pre-wrap; font-size: 12.5px; line-height: 1.6; color: var(--text-dim);
+  border-top: 1px dashed var(--border-line); margin-top: 6px; padding-top: 8px;
+}
+/* Formules et explications : masquées tant que « Détails » est éteint */
+.calc-result:not(.avec-details) .calc-formule,
+.calc-result:not(.avec-details) .calc-explication { display: none; }
+
+/* Onglets internes */
+.calc-tabs { display: flex; gap: 8px; border-bottom: 1px solid var(--border-line); padding-bottom: 12px; margin-top: 4px; }
+.calc-tab {
+  padding: 8px 14px; border-radius: 8px; border: 1px solid transparent; background: none;
+  color: var(--text-dim); font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.18s;
+}
+.calc-tab:hover { color: var(--text-bright); background: rgba(95,217,255,0.05); }
+.calc-tab.active { color: var(--accent-cyan); background: rgba(47,127,255,0.1); border-color: rgba(95,217,255,0.25); }
+.calc-section { display: flex; flex-direction: column; gap: 12px; }
+
+/* Catalogue de formules */
+.calc-search {
+  width: 100%; background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 10px;
+  padding: 10px 12px; color: var(--text-bright); font-family: inherit; font-size: 13.5px; outline: none;
+}
+.calc-search:focus { border-color: var(--border-glow); }
+.calc-search::placeholder { color: var(--text-faint); }
+.calc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.calc-chip {
+  padding: 5px 12px; border-radius: 999px; background: none; border: 1px solid var(--border-line);
+  color: var(--text-dim); font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.18s;
+}
+.calc-chip:hover { color: var(--text-bright); border-color: var(--border-glow); }
+.calc-chip.active { color: var(--accent-cyan); background: rgba(47,127,255,0.12); border-color: rgba(95,217,255,0.35); }
+.calc-flist { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.calc-fitem {
+  text-align: left; padding: 10px 12px; background: var(--bg-panel); border: 1px solid var(--border-line);
+  border-radius: 10px; color: var(--text-bright); font-family: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.18s, background 0.18s; display: flex; flex-direction: column; gap: 3px;
+}
+.calc-fitem .cat { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+.calc-fitem:hover { border-color: var(--border-glow); background: rgba(47,127,255,0.05); }
+.calc-fitem.actif { border-color: rgba(95,217,255,0.5); box-shadow: 0 0 16px rgba(47,127,255,0.2); }
+.calc-vide { color: var(--text-faint); font-size: 13px; padding: 18px 4px; text-align: center; grid-column: 1 / -1; }
+
+/* Formulaire de formule */
+.calc-form {
+  display: flex; flex-direction: column; gap: 14px; padding: 16px 18px 18px;
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 14px;
+}
+.calc-form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.calc-form-title { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 600; }
+.calc-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 12px; }
+.calc-field { display: flex; flex-direction: column; gap: 5px; }
+.calc-field label { font-size: 11.5px; color: var(--text-dim); }
+.calc-field .box {
+  display: flex; align-items: center; background: var(--bg-void); border: 1px solid var(--border-line);
+  border-radius: 8px; transition: border-color 0.18s;
+}
+.calc-field .box:focus-within { border-color: var(--border-glow); }
+.calc-field input[type="text"], .calc-field input[type="password"] {
+  flex: 1; min-width: 0; background: transparent; border: none; outline: none; color: var(--text-bright);
+  font-family: 'Chakra Petch', sans-serif; font-size: 14.5px; padding: 9px 10px;
+}
+.calc-field .u { color: var(--text-faint); font-size: 12px; padding-right: 10px; white-space: nowrap; }
+.calc-field input[type="checkbox"] { margin: 10px; accent-color: #2f7fff; width: 16px; height: 16px; }
+.calc-select {
+  background: var(--bg-void); border: 1px solid var(--border-line); border-radius: 8px; padding: 8px 10px;
+  color: var(--text-bright); font-family: inherit; font-size: 13px; outline: none;
+}
+.calc-select:focus { border-color: var(--border-glow); }
+.calc-btn {
+  padding: 9px 16px; border-radius: 9px; background: rgba(47,127,255,0.18); border: 1px solid var(--border-glow);
+  color: var(--accent-cyan); font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.18s;
+}
+.calc-btn:hover { background: rgba(47,127,255,0.3); box-shadow: 0 0 14px rgba(47,127,255,0.3); }
+.calc-btn.secondaire { background: none; border-color: var(--border-line); color: var(--text-dim); }
+.calc-btn.secondaire:hover { color: var(--text-bright); border-color: var(--border-glow); box-shadow: none; }
+.calc-form-actions { display: flex; gap: 8px; }
+
+/* Historique */
+.calc-histo { display: flex; flex-direction: column; gap: 6px; }
+.calc-hrow {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg-panel);
+  border: 1px solid var(--border-line); border-radius: 10px; cursor: pointer; transition: border-color 0.18s;
+}
+.calc-hrow:hover { border-color: var(--border-glow); }
+.calc-hrow .corps { flex: 1; min-width: 0; }
+.calc-hrow .e { font-size: 12px; color: var(--text-faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.calc-hrow .r { font-family: 'Chakra Petch', sans-serif; font-size: 15px; color: var(--accent-cyan); margin-top: 2px; overflow-wrap: anywhere; }
+.calc-hrow .x {
+  width: 24px; height: 24px; border-radius: 6px; border: none; background: none; color: var(--text-faint);
+  cursor: pointer; font-size: 12px; flex-shrink: 0;
+}
+.calc-hrow .x:hover { background: rgba(255,84,112,0.18); color: #ff5470; }
+.calc-histo-actions { display: flex; justify-content: flex-end; }
