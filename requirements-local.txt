@@ -1,0 +1,2 @@
+# À installer en plus, sur ton PC seulement (fenêtre de bureau) : pip install -r requirements-local.txt
+pywebview

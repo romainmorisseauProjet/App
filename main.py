@@ -3,10 +3,7 @@ import sqlite3
 import base64
 import shutil
 import subprocess
-import platform
 from datetime import datetime
-from bottle import route, run, static_file
-import voice
 import actualites
 import musique
 import carburants
@@ -14,22 +11,25 @@ import iss
 import projets
 import calcul
 
-AUDIO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "audio")
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "data", "assistant.db")
-HTML_PATH = os.path.join(BASE_DIR, "ui", "index.html")
-CONVERSIONS_DIR = os.path.join(BASE_DIR, "data", "conversions")
-MUSIQUE_DIR_DEFAUT = os.path.join(BASE_DIR, "data", "musique")
 
-# Référence vers la fenêtre principale, nécessaire pour ouvrir les
-# sélecteurs de fichiers natifs depuis les méthodes de l'Api (uniquement en local).
-window = None
+# Dossier où vivent TOUTES les données (base SQLite, musique, conversions...).
+# Sur Render, pointe DATA_DIR vers le disque persistant (ex. /var/data) :
+# sans disque, tout ce qui est dans data/ disparaît à chaque redéploiement.
+DATA_DIR = os.environ.get("DATA_DIR") or os.path.join(BASE_DIR, "data")
+DB_PATH = os.path.join(DATA_DIR, "assistant.db")
+UI_DIR = os.path.join(BASE_DIR, "ui")
+AUDIO_PATH = os.path.join(DATA_DIR, "audio")
+CONVERSIONS_DIR = os.path.join(DATA_DIR, "conversions")
+UPLOADS_DIR = os.path.join(DATA_DIR, "uploads")
+# MUSIQUE_DIR permet de pointer vers ton dossier de musique existant (en local).
+MUSIQUE_DIR = os.environ.get("MUSIQUE_DIR") or os.path.join(DATA_DIR, "musique")
 
 
 def init_db():
     """Crée le fichier de base de données et les tables nécessaires
-    si elles n'existent pas encore."""
+    si elles n'existent pas encore. Les futurs modules (manga, canevas IA,
+    etc.) ajouteront leurs propres tables ici au fur et à mesure."""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.execute("""
@@ -73,16 +73,21 @@ def init_db():
 
 
 class Api:
-    """Pont entre le JavaScript de l'interface et le code Python."""
+    """Toutes les méthodes publiques (sans _ au début) sont appelables par
+    l'interface via window.pywebview.api.nom_methode(...). Dans la version
+    web, bridge.js transforme cet appel en requête POST /api/nom_methode,
+    que server.py redirige vers la méthode du même nom ici."""
 
     def ping(self):
-        return "Connexion Python OK — la fenêtre parle bien avec le backend."
-
-    def test_voix(self):
-        return voice.test_chargement()
+        return "Connexion au serveur OK."
 
     def recevoir_audio(self, audio_base64):
+        """Étape 2 : reçoit l'audio enregistré depuis l'interface et le
+        sauvegarde sur le disque. Ne le transcrit pas encore (ça viendra
+        à l'étape 3) — on vérifie juste que le son arrive bien jusqu'ici."""
         os.makedirs(AUDIO_PATH, exist_ok=True)
+        if len(audio_base64) > 30_000_000:
+            return "Enregistrement trop long."
         donnees = base64.b64decode(audio_base64)
         chemin = os.path.join(AUDIO_PATH, "dernier_enregistrement.webm")
         with open(chemin, "wb") as f:
@@ -127,6 +132,12 @@ class Api:
         return {"ok": True}
 
     # --- Domotique ---
+    # Pour l'instant les appareils sont gérés localement (mémorisés en base,
+    # allumage/extinction et réglages simulés). Chaque type d'appareil est
+    # préparé pour qu'on y branche plus tard un vrai protocole (Tuya, Philips
+    # Hue, MQTT/Zigbee2MQTT, etc.) sans changer l'interface : il suffira
+    # d'appeler la véritable API du fabricant dans toggle_appareil /
+    # set_valeur_appareil au lieu de se contenter d'écrire en base.
 
     VALEURS_DEFAUT_PAR_TYPE = {"lampe": 100, "volet": 100, "thermostat": 20}
 
@@ -190,6 +201,9 @@ class Api:
         return {"ok": True, "etat": nouvel_etat}
 
     def set_valeur_appareil(self, appareil_id, valeur):
+        """Utilisé par les curseurs (luminosité, température, ouverture du
+        volet…). Régler une valeur rallume l'appareil, comme dans la plupart
+        des applis domotique."""
         conn = sqlite3.connect(DB_PATH)
         conn.execute(
             "UPDATE domotique_appareils SET valeur = ?, etat = 1 WHERE id = ?",
@@ -199,7 +213,7 @@ class Api:
         conn.close()
         return {"ok": True}
 
-    # --- Ordre des modules ---
+    # --- Ordre des modules (glisser-déposer dans l'onglet Modules) ---
 
     def get_ordre_modules(self):
         conn = sqlite3.connect(DB_PATH)
@@ -219,51 +233,33 @@ class Api:
         return {"ok": True}
 
     # --- Conversion de fichiers ---
+    # Images <-> PDF (Pillow / PyMuPDF), documents bureautiques -> PDF
+    # (LibreOffice, marche pour Word/Excel/PowerPoint/texte), PDF -> Word
+    # (pdf2docx), PDF -> PowerPoint (pages rendues en images, via PyMuPDF +
+    # python-pptx) et fusion de PDF (pypdf). Chaque conversion écrit ses
+    # résultats dans un sous-dossier horodaté de data/conversions/, jamais
+    # sur les fichiers d'origine.
 
-    FILTRES_DIALOGUE = {
-        "images": ("Images (*.jpg;*.jpeg;*.png)",),
-        "pdf": ("Documents PDF (*.pdf)",),
-        "document": (
-            "Documents bureautiques (*.docx;*.doc;*.odt;*.rtf;*.txt;"
-            "*.pptx;*.ppt;*.odp;*.xlsx;*.xls;*.ods;*.csv)",
-        ),
-    }
+    # Version web : les fichiers sont envoyés par le navigateur (POST /upload,
+    # voir server.py) et rangés dans data/uploads/<id>/<nom>. L'interface ne
+    # manipule que ces chemins relatifs "<id>/<nom>" ; le résultat est proposé
+    # en téléchargement (/download/...).
 
-    def choisir_fichiers(self, filtre, multiple):
-        if window is None:
-            return []
-        import webview
-        types = self.FILTRES_DIALOGUE.get(filtre, ())
-        resultat = window.create_file_dialog(
-            webview.OPEN_DIALOG, allow_multiple=bool(multiple), file_types=types
-        )
-        return list(resultat) if resultat else []
-
-    def ouvrir_dossier(self, chemin):
-        try:
-            systeme = platform.system()
-            if systeme == "Windows":
-                os.startfile(chemin)
-            elif systeme == "Darwin":
-                subprocess.run(["open", chemin], check=True)
-            else:
-                subprocess.run(["xdg-open", chemin], check=True)
-            return {"ok": True}
-        except Exception as e:
-            return {"ok": False, "message": str(e)}
-
-    def choisir_dossier_sortie(self):
-        if window is None:
-            return None
-        import webview
-        resultat = window.create_file_dialog(webview.FOLDER_DIALOG)
-        return resultat[0] if resultat else None
+    def _chemin_upload(self, relatif):
+        """Transforme un chemin relatif envoyé par le navigateur en chemin
+        absolu, en refusant tout ce qui sort du dossier d'uploads."""
+        racine = os.path.realpath(UPLOADS_DIR)
+        complet = os.path.realpath(os.path.join(racine, str(relatif)))
+        if os.path.commonpath([racine, complet]) != racine or not os.path.isfile(complet):
+            raise ValueError("Fichier non autorisé ou introuvable.")
+        return complet
 
     def _nouveau_dossier_sortie(self, prefixe, dossier_parent=None):
-        parent = dossier_parent or CONVERSIONS_DIR
-        os.makedirs(parent, exist_ok=True)
-        horodatage = datetime.now().strftime("%Y%m%d-%H%M%S")
-        dossier = os.path.join(parent, f"{horodatage}_{prefixe}")
+        # Le paramètre dossier_parent est ignoré : le navigateur ne doit jamais
+        # pouvoir choisir un chemin d'écriture sur le serveur.
+        os.makedirs(CONVERSIONS_DIR, exist_ok=True)
+        horodatage = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        dossier = os.path.join(CONVERSIONS_DIR, f"{horodatage}_{prefixe}")
         os.makedirs(dossier, exist_ok=True)
         return dossier
 
@@ -271,6 +267,7 @@ class Api:
         if not chemins:
             return {"ok": False, "message": "Choisis au moins une image."}
         try:
+            chemins = [self._chemin_upload(c) for c in chemins]
             from PIL import Image
             images = [Image.open(c).convert("RGB") for c in chemins]
             dossier = self._nouveau_dossier_sortie("images-vers-pdf", dossier_sortie)
@@ -284,6 +281,7 @@ class Api:
         if not chemin_pdf:
             return {"ok": False, "message": "Choisis un fichier PDF."}
         try:
+            chemin_pdf = self._chemin_upload(chemin_pdf)
             import pymupdf
             dossier = self._nouveau_dossier_sortie("pdf-vers-images", dossier_sortie)
             doc = pymupdf.open(chemin_pdf)
@@ -297,13 +295,20 @@ class Api:
             return {"ok": False, "message": f"Échec de la conversion : {e}"}
 
     def document_vers_pdf(self, chemin_document, dossier_sortie=None):
+        """Convertit n'importe quel document bureautique en PDF via LibreOffice :
+        Word (.docx/.doc/.odt/.rtf), Excel (.xlsx/.xls/.ods/.csv),
+        PowerPoint (.pptx/.ppt/.odp) et texte brut (.txt)."""
+        if not chemin_document:
+            return {"ok": False, "message": "Choisis un document."}
         soffice = shutil.which("soffice") or shutil.which("libreoffice")
         if not soffice:
             return {
                 "ok": False,
-                "message": "LibreOffice est requis pour cette conversion et n'a pas été trouvé.",
+                "message": "LibreOffice est requis pour cette conversion et n'est pas installé sur le serveur. "
+                           "Il faut un déploiement Docker avec LibreOffice (voir le Dockerfile du projet).",
             }
         try:
+            chemin_document = self._chemin_upload(chemin_document)
             dossier = self._nouveau_dossier_sortie("document-vers-pdf", dossier_sortie)
             subprocess.run(
                 [soffice, "--headless", "--norestore", "--convert-to", "pdf", "--outdir", dossier, chemin_document],
@@ -318,6 +323,7 @@ class Api:
         if not chemin_pdf:
             return {"ok": False, "message": "Choisis un fichier PDF."}
         try:
+            chemin_pdf = self._chemin_upload(chemin_pdf)
             from pdf2docx import Converter
             dossier = self._nouveau_dossier_sortie("pdf-vers-word", dossier_sortie)
             nom = os.path.splitext(os.path.basename(chemin_pdf))[0]
@@ -330,9 +336,13 @@ class Api:
             return {"ok": False, "message": f"Échec de la conversion : {e}"}
 
     def pdf_vers_pptx(self, chemin_pdf, dossier_sortie=None):
+        """Convertit un PDF en présentation PowerPoint : chaque page devient
+        une diapositive pleine page (image). Le texte n'est pas modifiable
+        dans PowerPoint ensuite — pour ça, utilise plutôt PDF → Word."""
         if not chemin_pdf:
             return {"ok": False, "message": "Choisis un fichier PDF."}
         try:
+            chemin_pdf = self._chemin_upload(chemin_pdf)
             import pymupdf
             from pptx import Presentation
             from pptx.util import Emu
@@ -374,6 +384,7 @@ class Api:
         if not chemins or len(chemins) < 2:
             return {"ok": False, "message": "Choisis au moins deux fichiers PDF."}
         try:
+            chemins = [self._chemin_upload(c) for c in chemins]
             from pypdf import PdfReader, PdfWriter
             writer = PdfWriter()
             for chemin in chemins:
@@ -393,12 +404,10 @@ class Api:
     def get_actualites(self, categorie):
         return actualites.recuperer_articles(categorie)
 
-    def ouvrir_lien(self, url):
-        import webbrowser
-        webbrowser.open(url)
-        return {"ok": True}
-
     # --- Musique ---
+    # La bibliothèque vit sur le serveur (data/musique/). La lecture se fait
+    # dans le navigateur (balise <audio>), qui récupère les fichiers via
+    # /media/musique/<fichier> (voir server.py).
 
     def _lire_parametre(self, cle, defaut=None):
         conn = sqlite3.connect(DB_PATH)
@@ -416,44 +425,13 @@ class Api:
         conn.commit()
         conn.close()
 
-    def get_dossier_musique(self):
-        dossier = self._lire_parametre("dossier_musique", MUSIQUE_DIR_DEFAUT)
-        os.makedirs(dossier, exist_ok=True)
-        return dossier
-
-    def choisir_dossier_musique(self):
-        if window is None:
-            return None
-        import webview
-        resultat = window.create_file_dialog(webview.FOLDER_DIALOG)
-        if not resultat:
-            return None
-        self._ecrire_parametre("dossier_musique", resultat[0])
-        return resultat[0]
-
     def get_bibliotheque(self):
-        return musique.scanner_dossier(self.get_dossier_musique())
+        os.makedirs(MUSIQUE_DIR, exist_ok=True)
+        return musique.scanner_dossier(MUSIQUE_DIR)
 
     def telecharger_musique(self, url, format_cible):
-        return musique.telecharger(url, format_cible, self.get_dossier_musique())
-
-    def jouer_morceau(self, chemin):
-        return musique.jouer(chemin)
-
-    def basculer_pause_musique(self):
-        musique.basculer_pause()
-        return {"ok": True}
-
-    def definir_position_musique(self, secondes):
-        musique.definir_position(secondes)
-        return {"ok": True}
-
-    def definir_volume_musique(self, volume):
-        musique.definir_volume(volume)
-        return {"ok": True}
-
-    def get_etat_musique(self):
-        return musique.obtenir_etat()
+        os.makedirs(MUSIQUE_DIR, exist_ok=True)
+        return musique.telecharger(url, format_cible, MUSIQUE_DIR)
 
     # --- Carburants ---
 
@@ -463,6 +441,7 @@ class Api:
     # --- Station spatiale (ISS) ---
 
     def get_iss_etat(self):
+        """Position + télémétrie + pays survolé, en un seul appel."""
         pos = iss.position_actuelle()
         if pos.get("ok"):
             pos["pays"] = iss.pays_survole(pos["latitude"], pos["longitude"])
@@ -478,6 +457,7 @@ class Api:
         return iss.prochains_passages(latitude, longitude)
 
     def get_iss_lieu(self):
+        """Lieu d'observation mémorisé (JSON {nom, lat, lon}), ou None."""
         import json
         brut = self._lire_parametre("iss_lieu")
         return json.loads(brut) if brut else None
@@ -487,7 +467,9 @@ class Api:
         self._ecrire_parametre("iss_lieu", json.dumps({"nom": nom, "lat": latitude, "lon": longitude}))
         return {"ok": True}
 
-    # --- Projets ---
+
+    # --- Projets (bloc-notes + avancement) ---
+    # Toute la logique est dans projets.py ; ces méthodes ne font que faire le pont.
 
     def projets_lister(self):
         return projets.lister(DB_PATH)
@@ -531,7 +513,8 @@ class Api:
     def projets_tache_supprimer(self, tache_id):
         return projets.tache_supprimer(DB_PATH, tache_id)
 
-    # --- Calcul ---
+    # --- Calcul (expressions, conversions, maths, formules, photo) ---
+    # Toute la logique est dans calcul.py ; ces méthodes ne font que faire le pont.
 
     def calcul_catalogue(self):
         return calcul.catalogue()
@@ -561,43 +544,9 @@ class Api:
         return calcul.ia_retirer_cle(DB_PATH)
 
 
-# --- Routes du serveur web (pour Render) ---
-
-@route('/')
-def index():
-    return static_file('index.html', root=os.path.join(BASE_DIR, 'ui'))
-
-@route('/ui/<filepath:path>')
-def serve_ui(filepath):
-    return static_file(filepath, root=os.path.join(BASE_DIR, 'ui'))
-
-
-def main():
-    global window
-    init_db()
-    api = Api()
-    
-    # Render fournit automatiquement une variable d'environnement "PORT"
-    port = int(os.environ.get("PORT", 0))
-    
-    if port > 0:
-        # Mode Serveur Web (sur Render)
-        print(f"Démarrage du serveur web sur le port {port}...")
-        run(host="0.0.0.0", port=port, server="wsgiref")
-    else:
-        # Mode Bureau classique (sur ton ordinateur personnel)
-        import webview
-        window = webview.create_window(
-            "Assistant",
-            HTML_PATH,
-            js_api=api,
-            width=1200,
-            height=800,
-            min_size=(800, 560),
-            background_color="#050810",
-        )
-        webview.start()
-
-
 if __name__ == "__main__":
-    main()
+    # Lancement en local (VS Code, bouton ▶ ou « python main.py ») :
+    # ouvre la fenêtre de bureau comme avant. Sur Render, c'est server.py
+    # qui est lancé par gunicorn et ce bloc n'est jamais exécuté.
+    import lancer
+    lancer.demarrer()

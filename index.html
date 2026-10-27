@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="splash.css">
+<link rel="stylesheet" href="loading.css">
+<link rel="stylesheet" href="meteo.css">
+<link rel="stylesheet" href="voice.css">
+<link rel="stylesheet" href="domotique.css">
+<link rel="stylesheet" href="conversion.css">
+<link rel="stylesheet" href="actualites.css">
+<link rel="stylesheet" href="musique.css">
+<link rel="stylesheet" href="carburants.css">
+<link rel="stylesheet" href="iss.css">
+<link rel="stylesheet" href="projets.css">
+<link rel="stylesheet" href="calcul.css">
+</head>
+<body>
+
+<!-- Écran de démarrage : visible pendant la connexion à Python, avant l'entrée dans l'app -->
+<div id="splashScreen" class="splash">
+  <div class="splash-grille"></div>
+  <div class="splash-aura"></div>
+
+  <div class="splash-esprit">
+    <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" class="splash-svg">
+      <defs>
+    <filter id="splashGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="1.8" result="flou"/>
+      <feMerge><feMergeNode in="flou"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="splashGlowFort" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <radialGradient id="splashAura" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#5fd9ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="splashLien" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d4f2ff"/>
+      <stop offset="55%" stop-color="#8fbcff"/>
+      <stop offset="100%" stop-color="#bfa8ff"/>
+    </linearGradient>
+    <linearGradient id="splashRayV" gradientUnits="userSpaceOnUse" x1="0" y1="1" x2="0" y2="219">
+      <stop offset="0%" stop-color="#9fd0ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#9fd0ff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="splashRayD" gradientUnits="userSpaceOnUse" x1="14" y1="196" x2="206" y2="24">
+      <stop offset="0%" stop-color="#9fd0ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#e8f6ff"/>
+      <stop offset="100%" stop-color="#9fd0ff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="splashCentre" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#e3f2ff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#9fd0ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="110" cy="110" r="106" fill="url(#splashAura)"/>
+
+  <g class="splash-rayons" stroke-linecap="round" fill="none" filter="url(#splashGlow)">
+    <line x1="110" y1="1" x2="110" y2="219" stroke="url(#splashRayV)" stroke-width="1.6"/>
+    <line x1="14" y1="196" x2="206" y2="24" stroke="url(#splashRayD)" stroke-width="1.1" opacity="0.85"/>
+  </g>
+
+  <g class="splash-galaxie">
+    <g class="splash-reseau" stroke="url(#splashLien)" stroke-width="0.75" stroke-linecap="round" stroke-opacity="0.8" filter="url(#splashGlow)">
+        <line x1="110.0" y1="26.0" x2="159.4" y2="42.0"/>
+        <line x1="110.0" y1="26.0" x2="189.9" y2="136.0"/>
+        <line x1="110.0" y1="26.0" x2="30.1" y2="136.0"/>
+        <line x1="110.0" y1="26.0" x2="60.6" y2="42.0"/>
+        <line x1="110.0" y1="26.0" x2="129.8" y2="49.1"/>
+        <line x1="110.0" y1="26.0" x2="90.2" y2="49.1"/>
+        <line x1="110.0" y1="26.0" x2="110.0" y2="68.0"/>
+        <line x1="110.0" y1="26.0" x2="134.7" y2="76.0"/>
+        <line x1="159.4" y1="42.0" x2="189.9" y2="84.0"/>
+        <line x1="159.4" y1="42.0" x2="159.4" y2="178.0"/>
+        <line x1="159.4" y1="42.0" x2="30.1" y2="84.0"/>
+        <line x1="159.4" y1="42.0" x2="129.8" y2="49.1"/>
+        <line x1="159.4" y1="42.0" x2="161.8" y2="72.4"/>
+        <line x1="159.4" y1="42.0" x2="134.7" y2="76.0"/>
+        <line x1="159.4" y1="42.0" x2="149.9" y2="97.0"/>
+        <line x1="189.9" y1="84.0" x2="189.9" y2="136.0"/>
+        <line x1="189.9" y1="84.0" x2="110.0" y2="194.0"/>
+        <line x1="189.9" y1="84.0" x2="60.6" y2="42.0"/>
+        <line x1="189.9" y1="84.0" x2="161.8" y2="72.4"/>
+        <line x1="189.9" y1="84.0" x2="174.0" y2="110.0"/>
+        <line x1="189.9" y1="84.0" x2="149.9" y2="97.0"/>
+        <line x1="189.9" y1="84.0" x2="149.9" y2="123.0"/>
+        <line x1="189.9" y1="136.0" x2="159.4" y2="178.0"/>
+        <line x1="189.9" y1="136.0" x2="60.6" y2="178.0"/>
+        <line x1="189.9" y1="136.0" x2="174.0" y2="110.0"/>
+        <line x1="189.9" y1="136.0" x2="161.8" y2="147.6"/>
+        <line x1="189.9" y1="136.0" x2="149.9" y2="123.0"/>
+        <line x1="189.9" y1="136.0" x2="134.7" y2="144.0"/>
+        <line x1="159.4" y1="178.0" x2="110.0" y2="194.0"/>
+        <line x1="159.4" y1="178.0" x2="30.1" y2="136.0"/>
+        <line x1="159.4" y1="178.0" x2="161.8" y2="147.6"/>
+        <line x1="159.4" y1="178.0" x2="129.8" y2="170.9"/>
+        <line x1="159.4" y1="178.0" x2="134.7" y2="144.0"/>
+        <line x1="159.4" y1="178.0" x2="110.0" y2="152.0"/>
+        <line x1="110.0" y1="194.0" x2="60.6" y2="178.0"/>
+        <line x1="110.0" y1="194.0" x2="30.1" y2="84.0"/>
+        <line x1="110.0" y1="194.0" x2="129.8" y2="170.9"/>
+        <line x1="110.0" y1="194.0" x2="90.2" y2="170.9"/>
+        <line x1="110.0" y1="194.0" x2="110.0" y2="152.0"/>
+        <line x1="110.0" y1="194.0" x2="85.3" y2="144.0"/>
+        <line x1="60.6" y1="178.0" x2="30.1" y2="136.0"/>
+        <line x1="60.6" y1="178.0" x2="60.6" y2="42.0"/>
+        <line x1="60.6" y1="178.0" x2="90.2" y2="170.9"/>
+        <line x1="60.6" y1="178.0" x2="58.2" y2="147.6"/>
+        <line x1="60.6" y1="178.0" x2="85.3" y2="144.0"/>
+        <line x1="60.6" y1="178.0" x2="70.1" y2="123.0"/>
+        <line x1="30.1" y1="136.0" x2="30.1" y2="84.0"/>
+        <line x1="30.1" y1="136.0" x2="58.2" y2="147.6"/>
+        <line x1="30.1" y1="136.0" x2="46.0" y2="110.0"/>
+        <line x1="30.1" y1="136.0" x2="70.1" y2="123.0"/>
+        <line x1="30.1" y1="136.0" x2="70.1" y2="97.0"/>
+        <line x1="30.1" y1="84.0" x2="60.6" y2="42.0"/>
+        <line x1="30.1" y1="84.0" x2="46.0" y2="110.0"/>
+        <line x1="30.1" y1="84.0" x2="58.2" y2="72.4"/>
+        <line x1="30.1" y1="84.0" x2="70.1" y2="97.0"/>
+        <line x1="30.1" y1="84.0" x2="85.3" y2="76.0"/>
+        <line x1="60.6" y1="42.0" x2="58.2" y2="72.4"/>
+        <line x1="60.6" y1="42.0" x2="90.2" y2="49.1"/>
+        <line x1="60.6" y1="42.0" x2="110.0" y2="68.0"/>
+        <line x1="60.6" y1="42.0" x2="85.3" y2="76.0"/>
+        <line x1="129.8" y1="49.1" x2="161.8" y2="72.4"/>
+        <line x1="129.8" y1="49.1" x2="174.0" y2="110.0"/>
+        <line x1="129.8" y1="49.1" x2="58.2" y2="72.4"/>
+        <line x1="129.8" y1="49.1" x2="90.2" y2="49.1"/>
+        <line x1="129.8" y1="49.1" x2="110.0" y2="68.0"/>
+        <line x1="129.8" y1="49.1" x2="85.3" y2="76.0"/>
+        <line x1="161.8" y1="72.4" x2="174.0" y2="110.0"/>
+        <line x1="161.8" y1="72.4" x2="161.8" y2="147.6"/>
+        <line x1="161.8" y1="72.4" x2="90.2" y2="49.1"/>
+        <line x1="161.8" y1="72.4" x2="110.0" y2="68.0"/>
+        <line x1="161.8" y1="72.4" x2="134.7" y2="76.0"/>
+        <line x1="174.0" y1="110.0" x2="161.8" y2="147.6"/>
+        <line x1="174.0" y1="110.0" x2="129.8" y2="170.9"/>
+        <line x1="174.0" y1="110.0" x2="134.7" y2="76.0"/>
+        <line x1="174.0" y1="110.0" x2="149.9" y2="97.0"/>
+        <line x1="161.8" y1="147.6" x2="129.8" y2="170.9"/>
+        <line x1="161.8" y1="147.6" x2="90.2" y2="170.9"/>
+        <line x1="161.8" y1="147.6" x2="149.9" y2="97.0"/>
+        <line x1="161.8" y1="147.6" x2="149.9" y2="123.0"/>
+        <line x1="129.8" y1="170.9" x2="90.2" y2="170.9"/>
+        <line x1="129.8" y1="170.9" x2="58.2" y2="147.6"/>
+        <line x1="129.8" y1="170.9" x2="149.9" y2="123.0"/>
+        <line x1="129.8" y1="170.9" x2="134.7" y2="144.0"/>
+        <line x1="90.2" y1="170.9" x2="58.2" y2="147.6"/>
+        <line x1="90.2" y1="170.9" x2="46.0" y2="110.0"/>
+        <line x1="90.2" y1="170.9" x2="134.7" y2="144.0"/>
+        <line x1="90.2" y1="170.9" x2="110.0" y2="152.0"/>
+        <line x1="58.2" y1="147.6" x2="46.0" y2="110.0"/>
+        <line x1="58.2" y1="147.6" x2="58.2" y2="72.4"/>
+        <line x1="58.2" y1="147.6" x2="110.0" y2="152.0"/>
+        <line x1="58.2" y1="147.6" x2="85.3" y2="144.0"/>
+        <line x1="46.0" y1="110.0" x2="58.2" y2="72.4"/>
+        <line x1="46.0" y1="110.0" x2="90.2" y2="49.1"/>
+        <line x1="46.0" y1="110.0" x2="85.3" y2="144.0"/>
+        <line x1="46.0" y1="110.0" x2="70.1" y2="123.0"/>
+        <line x1="58.2" y1="72.4" x2="90.2" y2="49.1"/>
+        <line x1="58.2" y1="72.4" x2="70.1" y2="123.0"/>
+        <line x1="58.2" y1="72.4" x2="70.1" y2="97.0"/>
+        <line x1="90.2" y1="49.1" x2="70.1" y2="97.0"/>
+        <line x1="90.2" y1="49.1" x2="85.3" y2="76.0"/>
+        <line x1="110.0" y1="68.0" x2="134.7" y2="76.0"/>
+        <line x1="110.0" y1="68.0" x2="85.3" y2="76.0"/>
+        <line x1="110.0" y1="68.0" x2="116.8" y2="89.1"/>
+        <line x1="110.0" y1="68.0" x2="103.2" y2="89.1"/>
+        <line x1="110.0" y1="68.0" x2="110.0" y2="110.0"/>
+        <line x1="134.7" y1="76.0" x2="149.9" y2="97.0"/>
+        <line x1="134.7" y1="76.0" x2="116.8" y2="89.1"/>
+        <line x1="134.7" y1="76.0" x2="127.8" y2="97.1"/>
+        <line x1="149.9" y1="97.0" x2="149.9" y2="123.0"/>
+        <line x1="149.9" y1="97.0" x2="127.8" y2="97.1"/>
+        <line x1="149.9" y1="97.0" x2="132.0" y2="110.0"/>
+        <line x1="149.9" y1="97.0" x2="110.0" y2="110.0"/>
+        <line x1="149.9" y1="123.0" x2="134.7" y2="144.0"/>
+        <line x1="149.9" y1="123.0" x2="132.0" y2="110.0"/>
+        <line x1="149.9" y1="123.0" x2="127.8" y2="122.9"/>
+        <line x1="134.7" y1="144.0" x2="110.0" y2="152.0"/>
+        <line x1="134.7" y1="144.0" x2="127.8" y2="122.9"/>
+        <line x1="134.7" y1="144.0" x2="116.8" y2="130.9"/>
+        <line x1="134.7" y1="144.0" x2="110.0" y2="110.0"/>
+        <line x1="110.0" y1="152.0" x2="85.3" y2="144.0"/>
+        <line x1="110.0" y1="152.0" x2="116.8" y2="130.9"/>
+        <line x1="110.0" y1="152.0" x2="103.2" y2="130.9"/>
+        <line x1="85.3" y1="144.0" x2="70.1" y2="123.0"/>
+        <line x1="85.3" y1="144.0" x2="103.2" y2="130.9"/>
+        <line x1="85.3" y1="144.0" x2="92.2" y2="122.9"/>
+        <line x1="85.3" y1="144.0" x2="110.0" y2="110.0"/>
+        <line x1="70.1" y1="123.0" x2="70.1" y2="97.0"/>
+        <line x1="70.1" y1="123.0" x2="92.2" y2="122.9"/>
+        <line x1="70.1" y1="123.0" x2="88.0" y2="110.0"/>
+        <line x1="70.1" y1="97.0" x2="85.3" y2="76.0"/>
+        <line x1="70.1" y1="97.0" x2="88.0" y2="110.0"/>
+        <line x1="70.1" y1="97.0" x2="92.2" y2="97.1"/>
+        <line x1="70.1" y1="97.0" x2="110.0" y2="110.0"/>
+        <line x1="85.3" y1="76.0" x2="92.2" y2="97.1"/>
+        <line x1="85.3" y1="76.0" x2="103.2" y2="89.1"/>
+        <line x1="116.8" y1="89.1" x2="127.8" y2="97.1"/>
+        <line x1="116.8" y1="89.1" x2="103.2" y2="89.1"/>
+        <line x1="116.8" y1="89.1" x2="110.0" y2="110.0"/>
+        <line x1="127.8" y1="97.1" x2="132.0" y2="110.0"/>
+        <line x1="127.8" y1="97.1" x2="110.0" y2="110.0"/>
+        <line x1="132.0" y1="110.0" x2="127.8" y2="122.9"/>
+        <line x1="132.0" y1="110.0" x2="110.0" y2="110.0"/>
+        <line x1="127.8" y1="122.9" x2="116.8" y2="130.9"/>
+        <line x1="127.8" y1="122.9" x2="110.0" y2="110.0"/>
+        <line x1="116.8" y1="130.9" x2="103.2" y2="130.9"/>
+        <line x1="116.8" y1="130.9" x2="110.0" y2="110.0"/>
+        <line x1="103.2" y1="130.9" x2="92.2" y2="122.9"/>
+        <line x1="103.2" y1="130.9" x2="110.0" y2="110.0"/>
+        <line x1="92.2" y1="122.9" x2="88.0" y2="110.0"/>
+        <line x1="92.2" y1="122.9" x2="110.0" y2="110.0"/>
+        <line x1="88.0" y1="110.0" x2="92.2" y2="97.1"/>
+        <line x1="88.0" y1="110.0" x2="110.0" y2="110.0"/>
+        <line x1="92.2" y1="97.1" x2="103.2" y2="89.1"/>
+        <line x1="92.2" y1="97.1" x2="110.0" y2="110.0"/>
+        <line x1="103.2" y1="89.1" x2="110.0" y2="110.0"/>
+    </g>
+    <g class="splash-noeuds" fill="#ffffff" filter="url(#splashGlow)">
+        <circle cx="110.0" cy="26.0" r="2.3"/>
+        <circle cx="159.4" cy="42.0" r="2.3"/>
+        <circle cx="189.9" cy="84.0" r="2.3"/>
+        <circle cx="189.9" cy="136.0" r="2.3"/>
+        <circle cx="159.4" cy="178.0" r="2.3"/>
+        <circle cx="110.0" cy="194.0" r="2.3"/>
+        <circle cx="60.6" cy="178.0" r="2.3"/>
+        <circle cx="30.1" cy="136.0" r="2.3"/>
+        <circle cx="30.1" cy="84.0" r="2.3"/>
+        <circle cx="60.6" cy="42.0" r="2.3"/>
+        <circle cx="129.8" cy="49.1" r="2.0"/>
+        <circle cx="161.8" cy="72.4" r="2.0"/>
+        <circle cx="174.0" cy="110.0" r="2.0"/>
+        <circle cx="161.8" cy="147.6" r="2.0"/>
+        <circle cx="129.8" cy="170.9" r="2.0"/>
+        <circle cx="90.2" cy="170.9" r="2.0"/>
+        <circle cx="58.2" cy="147.6" r="2.0"/>
+        <circle cx="46.0" cy="110.0" r="2.0"/>
+        <circle cx="58.2" cy="72.4" r="2.0"/>
+        <circle cx="90.2" cy="49.1" r="2.0"/>
+        <circle cx="110.0" cy="68.0" r="1.7"/>
+        <circle cx="134.7" cy="76.0" r="1.7"/>
+        <circle cx="149.9" cy="97.0" r="1.7"/>
+        <circle cx="149.9" cy="123.0" r="1.7"/>
+        <circle cx="134.7" cy="144.0" r="1.7"/>
+        <circle cx="110.0" cy="152.0" r="1.7"/>
+        <circle cx="85.3" cy="144.0" r="1.7"/>
+        <circle cx="70.1" cy="123.0" r="1.7"/>
+        <circle cx="70.1" cy="97.0" r="1.7"/>
+        <circle cx="85.3" cy="76.0" r="1.7"/>
+        <circle cx="116.8" cy="89.1" r="1.4"/>
+        <circle cx="127.8" cy="97.1" r="1.4"/>
+        <circle cx="132.0" cy="110.0" r="1.4"/>
+        <circle cx="127.8" cy="122.9" r="1.4"/>
+        <circle cx="116.8" cy="130.9" r="1.4"/>
+        <circle cx="103.2" cy="130.9" r="1.4"/>
+        <circle cx="92.2" cy="122.9" r="1.4"/>
+        <circle cx="88.0" cy="110.0" r="1.4"/>
+        <circle cx="92.2" cy="97.1" r="1.4"/>
+        <circle cx="103.2" cy="89.1" r="1.4"/>
+    </g>
+  </g>
+
+  <circle cx="110" cy="110" r="26" fill="url(#splashCentre)" class="splash-centre" filter="url(#splashGlowFort)"/>
+  <circle cx="110" cy="110" r="4.5" fill="#ffffff" class="splash-coeur"/>
+    </svg>
+  </div>
+
+  <div class="splash-titre">ASSISTANT</div>
+  <div class="splash-sous-titre">Réveil de l'esprit du système…</div>
+  <div class="splash-points"><span></span><span></span><span></span></div>
+</div>
+
+<div class="backdrop"></div>
+
+<div class="app">
+  <aside class="sidebar open" id="sidebar">
+    <div class="brand">
+      <img src="logo.svg" alt="" class="brand-logo">
+      <span class="brand-text">Assistant</span>
+    </div>
+    <button class="burger" id="burgerBtn" aria-label="Réduire le menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <button class="nav-item active" data-tab="accueil" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="nav-label">Accueil</span>
+      </button>
+      <button class="nav-item" data-tab="meteo" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.4-1.5A4.5 4.5 0 0 0 6.5 19h11z"/></svg>
+        <span class="nav-label">Météo</span>
+      </button>
+      <button class="nav-item" data-tab="modules" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span class="nav-label">Modules</span>
+      </button>
+      <button class="nav-item" data-tab="parametres" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.37a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.63 15a1.7 1.7 0 0 0-1.56-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.63 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.63a1.7 1.7 0 0 0 1.04-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.63a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.37 9a1.7 1.7 0 0 0 1.56 1.04H21a2 2 0 1 1 0 4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg>
+        <span class="nav-label">Paramètres</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-text" id="statusText">Connexion…</span>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="pageTitle">ACCUEIL</div>
+        <div class="topbar-sub">Interface personnelle — Romain</div>
+      </div>
+      <div class="clock" id="clock">--:--</div>
+    </header>
+
+    <!-- Onglet Accueil -->
+    <section class="tab-panel" data-panel="accueil">
+      <div class="stage">
+        <div class="core-wrap" id="coreWrap">
+          <div class="core-ring r1" id="coreRing1"></div>
+          <div class="core-ring r2" id="coreRing2"></div>
+          <div class="core-ring r3" id="coreRing3"></div>
+          <div class="core-center" id="coreCenter"></div>
+        </div>
+        <div class="core-status">
+          <div class="state" id="coreState">En attente</div>
+          <div class="hint">Le cœur du système sera branché ici plus tard.</div>
+        </div>
+        <div class="transcription-block">
+          <div class="transcription-label">Transcription</div>
+          <div class="transcription-text placeholder" id="transcriptionText">En attente d'une commande vocale…</div>
+        </div>
+      </div>
+      <div class="composer">
+        <div class="composer-inner">
+          <input type="text" placeholder="Écrire un message…" aria-label="Message" id="msgInput">
+          <button class="mic-btn" id="micBtn" aria-label="Parler">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <button class="send-btn" id="sendBtn" aria-label="Envoyer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="voice-status hidden" id="voiceStatus"></div>
+      </div>
+      <div class="composer-note">Interface visuelle — le moteur IA n'est pas encore connecté</div>
+    </section>
+
+    <!-- Onglet Météo -->
+    <section class="tab-panel hidden" data-panel="meteo">
+      <div class="meteo-wrap">
+
+        <div class="meteo-search">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="citySearch" placeholder="Rechercher une ville…" autocomplete="off">
+          </div>
+          <div class="search-results hidden" id="searchResults"></div>
+        </div>
+
+        <div class="favoris-row" id="favorisRow">
+          <span class="favoris-empty" id="favorisEmpty">Aucune ville favorite pour l'instant</span>
+        </div>
+
+        <div class="meteo-body">
+          <div class="france-map-panel">
+            <div class="panel-title">France — température par région</div>
+            <svg id="franceMap" viewBox="0 0 520 580" width="520" height="580" class="france-svg" preserveAspectRatio="xMidYMid meet"></svg>
+            <div class="map-legend">
+              <span>Froid</span>
+              <span class="legend-bar"></span>
+              <span>Chaud</span>
+            </div>
+          </div>
+
+          <div class="detail-panel" id="detailPanel">
+            <div class="detail-empty" id="detailEmpty">
+              Clique sur une région ou recherche une ville pour voir le détail
+            </div>
+            <div class="detail-content hidden" id="detailContent">
+              <div class="detail-head">
+                <div>
+                  <div class="detail-city" id="detailCity">—</div>
+                  <div class="detail-region" id="detailRegion">—</div>
+                </div>
+                <button class="fav-btn" id="favBtn" aria-label="Ajouter aux favoris">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </button>
+              </div>
+              <div class="detail-now">
+                <div class="detail-temp" id="detailTemp">—°</div>
+                <div class="detail-desc" id="detailDesc">—</div>
+              </div>
+              <div class="forecast-strip" id="forecastStrip"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Onglet Modules -->
+    <section class="tab-panel hidden" data-panel="modules">
+      <div class="modules-grid">
+        <button class="module-card" type="button" data-open-tab="domotique" data-module-key="domotique">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2.05V17h6v-.25c0-.85.4-1.55 1-2.05A7 7 0 0 0 12 2z"/></svg>
+          </div>
+          <div class="module-card-title">Domotique</div>
+          <div class="module-card-desc">Connecte et contrôle tes appareils — lampes, prises, thermostats, volets…</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="conversion" data-module-key="conversion">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div class="module-card-title">Conversion de fichiers</div>
+          <div class="module-card-desc">Images, Word, Excel, PowerPoint ↔ PDF, et fusion de plusieurs PDF en un seul.</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="actualites" data-module-key="actualites">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+          </div>
+          <div class="module-card-title">Actualités</div>
+          <div class="module-card-desc">Un résumé des news par catégorie : France, international, tech, économie, sport…</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="musique" data-module-key="musique">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="module-card-title">Musique</div>
+          <div class="module-card-desc">Ta bibliothèque locale + téléchargement YouTube en MP3/MP4, lecteur façon Spotify.</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="carburants" data-module-key="carburants">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h12"/><path d="M4 9h8V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1z"/><path d="M4 22V9"/><path d="M12 22v-9"/><path d="M12 11h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2 2 2 0 0 0 2-2V9l-3-3"/></svg>
+          </div>
+          <div class="module-card-title">Carburants</div>
+          <div class="module-card-desc">Prix de l'essence en temps réel par ville, du moins cher au plus cher (open data officiel).</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="iss" data-module-key="iss">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.2"/><path d="M12 9.8V4M12 20v-5.8"/><rect x="2.5" y="5" width="6" height="4" rx=".6"/><rect x="15.5" y="5" width="6" height="4" rx=".6"/><rect x="2.5" y="15" width="6" height="4" rx=".6"/><rect x="15.5" y="15" width="6" height="4" rx=".6"/></svg>
+          </div>
+          <div class="module-card-title">Station spatiale</div>
+          <div class="module-card-desc">L'ISS en direct sur la carte du monde, et les prochains passages visibles au-dessus de chez toi.</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="projets" data-module-key="projets">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5z"/><path d="M4 22.5A2.5 2.5 0 0 1 6.5 20H20"/><path d="m9 10 2 2 4-4"/></svg>
+          </div>
+          <div class="module-card-title">Projets</div>
+          <div class="module-card-desc">Un bloc-notes par projet, avec une jauge d'avancement qui monte vers 100 % à mesure que tu avances.</div>
+        </button>
+        <button class="module-card" type="button" data-open-tab="calcul" data-module-key="calcul">
+          <div class="module-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+          </div>
+          <div class="module-card-title">Calcul</div>
+          <div class="module-card-desc">Expressions, conversions, maths, formules d'électronique, d'immobilier et de TNS — et résultat depuis une photo.</div>
+        </button>
+      </div>
+      <div class="modules-hint">Glisse-dépose une carte pour changer son ordre. D'autres modules (manga/anime, canevas IA, composants PC…) viendront ici, chacun sous forme de carte.</div>
+    </section>
+
+    <!-- Onglet Domotique (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="domotique">
+      <div class="domo-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="domo-head">
+          <div>
+            <div class="domo-title">Domotique</div>
+            <div class="domo-sub">Tes appareils connectés, mémorisés localement</div>
+          </div>
+          <button class="domo-add-btn" id="domoAddBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter un appareil
+          </button>
+        </div>
+
+        <div class="domo-grid" id="domoGrid">
+          <div class="domo-empty" id="domoEmpty">Aucun appareil pour l'instant — ajoute ta première lampe ou prise connectée.</div>
+        </div>
+      </div>
+
+      <div class="domo-modal-backdrop hidden" id="domoModalBackdrop">
+        <div class="domo-modal">
+          <div class="domo-modal-title">Nouvel appareil</div>
+
+          <label class="domo-field">
+            <span>Nom</span>
+            <input type="text" id="domoNomInput" placeholder="Ex. Lampe salon" autocomplete="off">
+          </label>
+
+          <label class="domo-field">
+            <span>Type</span>
+            <select id="domoTypeInput">
+              <option value="lampe">Lampe</option>
+              <option value="prise">Prise connectée</option>
+              <option value="thermostat">Thermostat</option>
+              <option value="volet">Volet roulant</option>
+              <option value="autre">Autre</option>
+            </select>
+          </label>
+
+          <label class="domo-field">
+            <span>Pièce (optionnel)</span>
+            <input type="text" id="domoPieceInput" placeholder="Ex. Salon" autocomplete="off">
+          </label>
+
+          <div class="domo-modal-error hidden" id="domoModalError"></div>
+
+          <div class="domo-modal-actions">
+            <button class="domo-btn-secondary" id="domoCancelBtn" type="button">Annuler</button>
+            <button class="domo-btn-primary" id="domoConfirmBtn" type="button">Ajouter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Conversion (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="conversion">
+      <div class="conv-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="conv-head">
+          <div class="conv-title">Conversion de fichiers</div>
+          <div class="conv-sub">Tout se passe en local, rien n'est envoyé sur internet</div>
+        </div>
+
+        <div class="conv-tabs" id="convTabs">
+          <button class="conv-tab active" type="button" data-conv-tab="img2pdf">Image → PDF</button>
+          <button class="conv-tab" type="button" data-conv-tab="pdf2img">PDF → Images</button>
+          <button class="conv-tab" type="button" data-conv-tab="doc2pdf">Documents → PDF</button>
+          <button class="conv-tab" type="button" data-conv-tab="pdf2docx">PDF → Word</button>
+          <button class="conv-tab" type="button" data-conv-tab="pdf2pptx">PDF → PowerPoint</button>
+          <button class="conv-tab" type="button" data-conv-tab="merge">Fusionner des PDF</button>
+        </div>
+
+        <!-- Image(s) -> PDF -->
+        <div class="conv-panel" data-conv-panel="img2pdf">
+          <p class="conv-desc">Choisis une ou plusieurs images (JPEG, PNG) : elles seront rassemblées dans un seul PDF, dans l'ordre de la liste.</p>
+          <button class="conv-pick-btn" type="button" data-pick="img2pdf" data-filtre="images" data-multiple="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Choisir des images…
+          </button>
+          <div class="conv-filelist" data-filelist="img2pdf"></div>
+          <button class="conv-action-btn" type="button" data-action="img2pdf" disabled>Convertir en PDF</button>
+          <div class="conv-result" data-result="img2pdf"></div>
+        </div>
+
+        <!-- PDF -> Images -->
+        <div class="conv-panel hidden" data-conv-panel="pdf2img">
+          <p class="conv-desc">Choisis un PDF : chaque page sera exportée en image dans un dossier dédié.</p>
+          <button class="conv-pick-btn" type="button" data-pick="pdf2img" data-filtre="pdf" data-multiple="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choisir un PDF…
+          </button>
+          <div class="conv-filelist" data-filelist="pdf2img"></div>
+          <label class="conv-option">
+            <span>Format des images</span>
+            <select id="pdf2imgFormat">
+              <option value="jpg">JPEG</option>
+              <option value="png">PNG</option>
+            </select>
+          </label>
+          <button class="conv-action-btn" type="button" data-action="pdf2img" disabled>Exporter les pages</button>
+          <div class="conv-result" data-result="pdf2img"></div>
+        </div>
+
+        <!-- Documents bureautiques -> PDF -->
+        <div class="conv-panel hidden" data-conv-panel="doc2pdf">
+          <p class="conv-desc">Choisis un document Word, Excel, PowerPoint (ou texte) à convertir en PDF. Nécessite LibreOffice installé sur cet ordinateur (gratuit, sur libreoffice.org).</p>
+          <button class="conv-pick-btn" type="button" data-pick="doc2pdf" data-filtre="document" data-multiple="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choisir un document…
+          </button>
+          <div class="conv-filelist" data-filelist="doc2pdf"></div>
+          <button class="conv-action-btn" type="button" data-action="doc2pdf" disabled>Convertir en PDF</button>
+          <div class="conv-result" data-result="doc2pdf"></div>
+        </div>
+
+        <!-- PDF -> Word -->
+        <div class="conv-panel hidden" data-conv-panel="pdf2docx">
+          <p class="conv-desc">Choisis un PDF à convertir en document Word modifiable (.docx). La mise en page peut varier selon la complexité du PDF d'origine.</p>
+          <button class="conv-pick-btn" type="button" data-pick="pdf2docx" data-filtre="pdf" data-multiple="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choisir un PDF…
+          </button>
+          <div class="conv-filelist" data-filelist="pdf2docx"></div>
+          <button class="conv-action-btn" type="button" data-action="pdf2docx" disabled>Convertir en Word</button>
+          <div class="conv-result" data-result="pdf2docx"></div>
+        </div>
+
+        <!-- PDF -> PowerPoint -->
+        <div class="conv-panel hidden" data-conv-panel="pdf2pptx">
+          <p class="conv-desc">Choisis un PDF : chaque page devient une diapositive PowerPoint pleine page (image). Pratique pour présenter un PDF, mais le texte n'est pas modifiable ensuite — pour ça, utilise plutôt PDF → Word.</p>
+          <button class="conv-pick-btn" type="button" data-pick="pdf2pptx" data-filtre="pdf" data-multiple="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choisir un PDF…
+          </button>
+          <div class="conv-filelist" data-filelist="pdf2pptx"></div>
+          <button class="conv-action-btn" type="button" data-action="pdf2pptx" disabled>Convertir en PowerPoint</button>
+          <div class="conv-result" data-result="pdf2pptx"></div>
+        </div>
+
+        <!-- Fusion PDF -->
+        <div class="conv-panel hidden" data-conv-panel="merge">
+          <p class="conv-desc">Choisis au moins deux PDF : ils seront fusionnés dans l'ordre de la liste ci-dessous (utilise les flèches pour réordonner).</p>
+          <button class="conv-pick-btn" type="button" data-pick="merge" data-filtre="pdf" data-multiple="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Choisir des PDF…
+          </button>
+          <div class="conv-filelist conv-filelist-reorder" data-filelist="merge"></div>
+          <button class="conv-action-btn" type="button" data-action="merge" disabled>Fusionner en un seul PDF</button>
+          <div class="conv-result" data-result="merge"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Actualités (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="actualites">
+      <div class="actu-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="actu-head">
+          <div>
+            <div class="actu-title">Actualités</div>
+            <div class="actu-sub" id="actuMaj">Résumé par catégorie, plusieurs sources</div>
+          </div>
+          <button class="actu-refresh-btn" id="actuRefreshBtn" type="button" aria-label="Actualiser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+        </div>
+
+        <div class="actu-tabs" id="actuTabs">
+          <button class="actu-tab active" type="button" data-actu-cat="politique_france">France</button>
+          <button class="actu-tab" type="button" data-actu-cat="international">International</button>
+          <button class="actu-tab" type="button" data-actu-cat="faits_divers">Faits divers</button>
+          <button class="actu-tab" type="button" data-actu-cat="technologie">Technologie</button>
+          <button class="actu-tab" type="button" data-actu-cat="economie">Économie</button>
+          <button class="actu-tab" type="button" data-actu-cat="sport">Sport</button>
+          <button class="actu-tab" type="button" data-actu-cat="culture">Culture</button>
+          <button class="actu-tab" type="button" data-actu-cat="sante">Santé</button>
+          <button class="actu-tab" type="button" data-actu-cat="environnement">Environnement</button>
+        </div>
+
+        <div class="actu-list" id="actuList">
+          <div class="actu-empty" id="actuEmpty">Chargement des actualités…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Musique (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="musique">
+      <div class="muz-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="muz-head">
+          <div>
+            <div class="muz-title">Musique</div>
+            <div class="muz-sub" id="muzDossierActuel">Bibliothèque du serveur</div>
+          </div>
+        </div>
+
+        <div class="muz-download">
+          <input type="text" id="muzUrlInput" placeholder="Colle un lien YouTube…" autocomplete="off">
+          <div class="muz-download-actions">
+            <button class="muz-format-btn active" id="muzFormatMp3" type="button" data-format="mp3">MP3</button>
+            <button class="muz-format-btn" id="muzFormatMp4" type="button" data-format="mp4">MP4</button>
+            <button class="muz-dl-btn" id="muzTelechargerBtn" type="button">Télécharger</button>
+          </div>
+          <div class="muz-download-result" id="muzDownloadResult"></div>
+        </div>
+
+        <div class="muz-liste" id="muzListe">
+          <div class="muz-empty" id="muzEmpty">Bibliothèque vide — télécharge un premier morceau ci-dessus.</div>
+        </div>
+      </div>
+
+      <div class="muz-player" id="muzPlayer">
+        <div class="muz-player-info">
+          <div class="muz-player-titre" id="muzPlayerTitre">Aucune lecture</div>
+          <div class="muz-player-artiste" id="muzPlayerArtiste"></div>
+        </div>
+        <div class="muz-player-controls">
+          <button class="muz-ctrl-btn" id="muzPrevBtn" aria-label="Précédent" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="muz-ctrl-btn muz-play-btn" id="muzPlayBtn" aria-label="Lecture" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="muz-ctrl-btn" id="muzNextBtn" aria-label="Suivant" type="button">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+          </button>
+        </div>
+        <div class="muz-progress-row">
+          <span class="muz-time" id="muzTempsActuel">0:00</span>
+          <input type="range" id="muzProgress" class="muz-progress" min="0" max="100" value="0">
+          <span class="muz-time" id="muzTempsTotal">0:00</span>
+        </div>
+        <div class="muz-volume-row">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="muz-volume-icon"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+          <input type="range" id="muzVolume" class="muz-volume" min="0" max="100" value="70">
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Carburants (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="carburants">
+      <div class="carb-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="carb-title">Carburants</div>
+        <div class="carb-sub">Open data officiel, mis à jour environ toutes les 10 minutes</div>
+
+        <div class="carb-form">
+          <div class="carb-search">
+            <input type="text" id="carbRecherche" placeholder="Commence à taper une ville…" autocomplete="off">
+            <div class="carb-suggestions hidden" id="carbSuggestions"></div>
+          </div>
+          <select id="carbType" aria-label="Carburant">
+            <option value="gazole">Gazole</option>
+            <option value="sp95">SP95</option>
+            <option value="sp98">SP98</option>
+            <option value="e10">E10</option>
+            <option value="e85">E85</option>
+            <option value="gplc">GPLC</option>
+          </select>
+          <select id="carbRayon" aria-label="Rayon">
+            <option value="5">5 km</option>
+            <option value="10" selected>10 km</option>
+            <option value="20">20 km</option>
+          </select>
+        </div>
+
+        <div class="carb-lieu" id="carbLieu"></div>
+
+        <div class="carb-liste" id="carbListe">
+          <div class="carb-empty">Choisis une ville dans les suggestions pour voir les stations autour.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Station spatiale (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="iss">
+      <div class="iss-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="iss-head">
+          <div>
+            <div class="iss-title">Station spatiale internationale</div>
+            <div class="iss-sub">Position en direct · fait le tour de la Terre en ~93 minutes</div>
+          </div>
+          <div class="iss-pill" id="issPastille"><span class="iss-pill-dot"></span><span id="issPastilleTexte">Connexion…</span></div>
+        </div>
+
+        <div class="iss-map-card">
+          <svg id="issSvg" class="iss-svg" viewBox="0 0 720 360" preserveAspectRatio="xMidYMid meet"></svg>
+          <div class="iss-legende">
+            <span><i style="border-color:rgba(160,180,220,0.6)"></i>déjà parcouru</span>
+            <span><i style="border-color:#5fd9ff"></i>trajectoire à venir</span>
+            <span>zone sombre = nuit</span>
+          </div>
+        </div>
+
+        <div class="iss-tuiles">
+          <div class="iss-tuile"><div class="iss-tuile-label">LATITUDE</div><div class="iss-tuile-valeur cyan" id="issLat">—</div></div>
+          <div class="iss-tuile"><div class="iss-tuile-label">LONGITUDE</div><div class="iss-tuile-valeur cyan" id="issLon">—</div></div>
+          <div class="iss-tuile"><div class="iss-tuile-label">ALTITUDE</div><div class="iss-tuile-valeur" id="issAlt">—</div></div>
+          <div class="iss-tuile"><div class="iss-tuile-label">VITESSE</div><div class="iss-tuile-valeur" id="issVit">—</div></div>
+          <div class="iss-tuile"><div class="iss-tuile-label">SURVOLE</div><div class="iss-tuile-valeur" id="issPays">—</div></div>
+          <div class="iss-tuile"><div class="iss-tuile-label">ÉCLAIRAGE</div><div class="iss-tuile-valeur" id="issLumiere">—</div></div>
+        </div>
+
+        <div class="iss-bas">
+          <div class="iss-carte">
+            <div class="iss-carte-titre">Voir l'ISS depuis chez toi</div>
+            <div class="iss-carte-sous">Choisis ta ville : l'appli calcule quand la station sera visible à l'œil nu.</div>
+            <div class="iss-recherche">
+              <input type="text" id="issLieuInput" placeholder="Commence à taper une ville…" autocomplete="off">
+              <div class="iss-suggestions hidden" id="issSuggestions"></div>
+            </div>
+            <div class="iss-statut" id="issStatut"></div>
+            <div id="issPassages"></div>
+          </div>
+
+          <div class="iss-carte">
+            <div class="iss-carte-titre" id="issEquipageTitre">Humains dans l'espace</div>
+            <div class="iss-carte-sous">Les personnes actuellement en orbite.</div>
+            <div class="iss-equipage" id="issEquipage"><div class="iss-vide">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Projets (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="projets">
+      <div class="prj-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="prj-layout">
+          <!-- Colonne de gauche : la liste des projets -->
+          <aside class="prj-col">
+            <div class="prj-col-tete">
+              <span class="prj-col-titre">Projets</span>
+              <button class="prj-ajout-btn" id="prjNouveauBtn" type="button" aria-label="Nouveau projet" title="Nouveau projet">+</button>
+            </div>
+            <div class="prj-nouveau hidden" id="prjNouveauForm">
+              <input type="text" id="prjNouveauInput" placeholder="Nom du projet… (Entrée)" maxlength="80" autocomplete="off">
+            </div>
+            <div class="prj-liste" id="prjListe"></div>
+          </aside>
+
+          <!-- Zone principale : le projet ouvert -->
+          <main class="prj-main">
+            <div class="prj-vide" id="prjVide">
+              <div class="prj-vide-titre">Aucun projet pour l'instant</div>
+              <div class="prj-vide-texte">Crée ton premier projet avec le bouton <b>+</b> : tu pourras y écrire tes notes, lister tes tâches et regarder la jauge monter.</div>
+            </div>
+
+            <div class="prj-contenu hidden" id="prjContenu">
+              <div class="prj-entete">
+                <input type="text" id="prjNom" class="prj-nom" maxlength="80" aria-label="Nom du projet" spellcheck="false">
+                <button class="prj-suppr-btn" id="prjSupprimerBtn" type="button">Supprimer le projet</button>
+              </div>
+
+              <div class="prj-avancement">
+                <div class="prj-av-haut">
+                  <span class="prj-pct" id="prjPct">0%</span>
+                  <span class="prj-av-detail" id="prjAvDetail"></span>
+                  <span class="prj-fini" id="prjFini">✓ Terminé</span>
+                </div>
+                <div class="prj-barre" id="prjBarreFond">
+                  <div class="prj-barre-remplie" id="prjBarre"></div>
+                  <i class="prj-jalon" style="left:25%"></i><i class="prj-jalon" style="left:50%"></i><i class="prj-jalon" style="left:75%"></i>
+                </div>
+                <div class="prj-manuel hidden" id="prjManuel">
+                  <span>Pas encore de tâche : règle l'avancement à la main</span>
+                  <input type="range" id="prjSlider" min="0" max="100" value="0" aria-label="Avancement manuel">
+                </div>
+              </div>
+
+              <div class="prj-onglets">
+                <button class="prj-onglet active" id="prjOngletNotes" type="button">Notes</button>
+                <button class="prj-onglet" id="prjOngletTaches" type="button">Tâches <span class="prj-onglet-compte" id="prjCompteTaches"></span></button>
+              </div>
+
+              <!-- Vue Notes : pages + éditeur -->
+              <div class="prj-vue" id="prjVueNotes">
+                <div class="prj-pages-ligne">
+                  <div class="prj-pages" id="prjPages"></div>
+                  <button class="prj-page-suppr" id="prjPageSupprBtn" type="button">Supprimer la page</button>
+                </div>
+                <input type="text" id="prjPageTitre" class="prj-page-titre" maxlength="80" placeholder="Titre de la page" aria-label="Titre de la page" spellcheck="false">
+                <div class="prj-barre-outils" id="prjOutils">
+                  <button type="button" class="prj-tb" data-cmd="bold" title="Gras (Ctrl+B)"><b>B</b></button>
+                  <button type="button" class="prj-tb" data-cmd="italic" title="Italique (Ctrl+I)"><i>I</i></button>
+                  <button type="button" class="prj-tb" data-cmd="underline" title="Souligné (Ctrl+U)"><u>U</u></button>
+                  <span class="prj-tb-sep"></span>
+                  <button type="button" class="prj-tb" data-cmd="titre" title="Titre / texte normal">Titre</button>
+                  <button type="button" class="prj-tb" data-cmd="ul" title="Liste à puces">• Liste</button>
+                  <button type="button" class="prj-tb" data-cmd="ol" title="Liste numérotée">1. Liste</button>
+                  <span class="prj-sauvegarde" id="prjSauvegarde"></span>
+                </div>
+                <div class="prj-editeur" id="prjEditeur" contenteditable="true" spellcheck="true" data-placeholder="Écris ici tes idées, tes comptes rendus, tes mesures…" data-vide="1"></div>
+              </div>
+
+              <!-- Vue Tâches -->
+              <div class="prj-vue hidden" id="prjVueTaches">
+                <input type="text" id="prjTacheInput" class="prj-tache-input" placeholder="Ajouter une tâche… (Entrée)" maxlength="300" autocomplete="off">
+                <div class="prj-taches" id="prjListeTaches"></div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Calcul (ouvert depuis la grille Modules) -->
+    <section class="tab-panel hidden" data-panel="calcul">
+      <div class="calc-wrap">
+        <button class="back-link" data-back-to="modules" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Retour aux modules
+        </button>
+
+        <div class="calc-head">
+          <div>
+            <div class="calc-title">Calcul</div>
+            <div class="calc-sub">4,7k*3 · 20% de 150 · 5 km en mi · resoudre x^2-3x+2=0 · ou une photo</div>
+          </div>
+          <div class="calc-head-actions">
+            <label class="calc-switch" title="Afficher les formules et explications">
+              <input type="checkbox" id="calcDetail">
+              <span class="calc-switch-track"></span>
+              <span class="calc-switch-label">Détails</span>
+            </label>
+            <button class="calc-ia-pill" id="calcIaPill" type="button">IA</button>
+          </div>
+        </div>
+
+        <div class="calc-ia-config hidden" id="calcIaConfig">
+          <div class="calc-field">
+            <label for="calcIaCle">Clé API Anthropic</label>
+            <div class="box"><input type="password" id="calcIaCle" placeholder="sk-ant-… (laisser vide pour ne pas changer)" autocomplete="off"></div>
+          </div>
+          <div class="calc-field">
+            <label for="calcIaModele">Modèle</label>
+            <div class="box"><input type="text" id="calcIaModele" autocomplete="off" spellcheck="false"></div>
+          </div>
+          <button class="calc-btn" id="calcIaSave" type="button">Enregistrer</button>
+          <button class="calc-btn secondaire" id="calcIaRetirer" type="button">Retirer la clé</button>
+          <div class="calc-ia-etat" id="calcIaEtat"></div>
+        </div>
+
+        <div class="calc-bar" id="calcBar">
+          <button class="calc-icon-btn" id="calcPhotoBtn" type="button" title="Ajouter une photo (ou glisse-la, ou Ctrl+V)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          </button>
+          <input type="file" id="calcFile" accept="image/*" hidden>
+          <input type="text" id="calcInput" placeholder="Calcul, conversion, équation… ou décris ce que tu veux" autocomplete="off" spellcheck="false">
+          <button class="calc-go" id="calcGo" type="button" title="Calculer (Entrée)">=</button>
+        </div>
+
+        <div class="calc-photo hidden" id="calcPhoto">
+          <img id="calcPhotoImg" alt="Photo jointe">
+          <div class="txt">Photo jointe : écris une consigne (facultatif) puis Entrée</div>
+          <button id="calcPhotoRetirer" type="button" title="Retirer la photo">✕</button>
+        </div>
+
+        <div class="calc-result hidden" id="calcResult"></div>
+
+        <div class="calc-tabs">
+          <button class="calc-tab active" type="button" data-calc-tab="formules">Formules</button>
+          <button class="calc-tab" type="button" data-calc-tab="historique">Historique</button>
+        </div>
+
+        <div class="calc-section" data-calc-section="formules">
+          <input type="text" class="calc-search" id="calcSearch" placeholder="Chercher une formule : led, buck, crédit, tva, timer…" autocomplete="off" spellcheck="false">
+          <div class="calc-chips" id="calcChips"></div>
+          <div class="calc-flist" id="calcFList"></div>
+          <div class="calc-form hidden" id="calcForm"></div>
+        </div>
+
+        <div class="calc-section hidden" data-calc-section="historique">
+          <div class="calc-histo-actions"><button class="calc-btn secondaire" id="calcHistoVider" type="button">Vider l'historique</button></div>
+          <div class="calc-histo" id="calcHisto"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Paramètres -->
+    <section class="tab-panel hidden" data-panel="parametres">
+      <div class="settings-block">
+        <div class="settings-row">
+          <span>Connexion au serveur</span>
+          <span id="bridgeResult" class="badge">test en cours…</span>
+        </div>
+        <div class="settings-row">
+          <span>Base de données</span>
+          <span class="badge ok">assistant.db (serveur)</span>
+        </div>
+        <div class="settings-row">
+          <span>Session</span>
+          <a class="badge" href="/logout" style="text-decoration:none">Se déconnecter</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="bridge.js"></script>
+<script src="loading.js"></script>
+<script src="app.js"></script>
+<script src="weather.js"></script>
+<script src="voice.js"></script>
+<script src="domotique.js"></script>
+<script src="conversion.js"></script>
+<script src="actualites.js"></script>
+<script src="musique.js"></script>
+<script src="carburants.js"></script>
+<script src="iss-carte.js"></script>
+<script src="iss.js"></script>
+<script src="projets.js"></script>
+<script src="calcul.js"></script>
+<script src="splash.js"></script>
+</body>
+</html>

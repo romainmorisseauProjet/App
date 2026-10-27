@@ -1,48 +1,18 @@
 """
-Module musique.
+Module musique (version web).
 
-Reprend le principe de ton lecteur Tkinter existant (pygame pour la
-lecture, yt-dlp pour récupérer des morceaux depuis YouTube), mais intégré
-à l'appli plutôt qu'en fenêtre séparée. Isolé dans ce fichier, comme les
-autres modules : main.py vient piocher dedans.
+La lecture se fait maintenant dans le navigateur (balise <audio>) : ce fichier
+ne sert plus qu'à lister la bibliothèque stockée sur le serveur et à y
+télécharger des morceaux avec yt-dlp.
 """
 
 import os
 import shutil
-import time
 
-import pygame
 from mutagen import File as MutagenFile
-
-try:
-    pygame.mixer.init()
-except Exception as e:
-    print("Mode silencieux activé (aucun périphérique audio sur le serveur) :", e)
 
 EXTENSIONS_AUDIO = {".mp3", ".wav", ".ogg", ".flac", ".m4a"}
 EXTENSIONS_VIDEO = {".mp4", ".mkv", ".webm"}
-
-# État de lecture en mémoire. pygame.mixer.music ne donne pas directement
-# "où on en est" dans le morceau, donc on calcule la position nous-mêmes
-# à partir de l'heure de démarrage.
-_etat = {
-    "chemin": None,
-    "duree": 0,
-    "debut": None,      # timestamp epoch du démarrage de la lecture en cours
-    "position_pause": 0,
-    "en_lecture": False,
-}
-
-
-def _duree_fichier(chemin):
-    try:
-        audio = MutagenFile(chemin)
-        if audio and audio.info:
-            return audio.info.length
-    except Exception:
-        pass
-    return 0
-
 
 def scanner_dossier(dossier):
     """Liste les morceaux (audio et vidéo) trouvés dans le dossier de
@@ -72,77 +42,13 @@ def scanner_dossier(dossier):
             pass
 
         morceaux.append({
-            "chemin": chemin,
+            "fichier": nom,
             "titre": titre,
             "artiste": artiste,
             "duree": round(duree),
             "type": "video" if ext in EXTENSIONS_VIDEO else "audio",
         })
     return morceaux
-
-
-def jouer(chemin):
-    if not os.path.isfile(chemin):
-        return {"ok": False, "message": "Fichier introuvable."}
-    try:
-        pygame.mixer.music.load(chemin)
-        pygame.mixer.music.play()
-        _etat["chemin"] = chemin
-        _etat["debut"] = time.time()
-        _etat["position_pause"] = 0
-        _etat["en_lecture"] = True
-        _etat["duree"] = _duree_fichier(chemin)
-        return {"ok": True}
-    except Exception as e:
-        return {"ok": False, "message": f"Impossible de lire ce fichier : {e}"}
-
-
-def basculer_pause():
-    if not _etat["chemin"]:
-        return
-    if _etat["en_lecture"]:
-        _etat["position_pause"] = position_actuelle()
-        pygame.mixer.music.pause()
-        _etat["en_lecture"] = False
-    else:
-        pygame.mixer.music.unpause()
-        _etat["debut"] = time.time() - _etat["position_pause"]
-        _etat["en_lecture"] = True
-
-
-def definir_position(secondes):
-    """Saute à une position donnée (utilisé quand on clique sur la barre
-    de progression). Fonctionne pour mp3/ogg via pygame."""
-    if not _etat["chemin"]:
-        return
-    try:
-        pygame.mixer.music.play(start=secondes)
-        _etat["debut"] = time.time() - secondes
-        _etat["en_lecture"] = True
-    except Exception:
-        pass  # certains formats ne supportent pas le saut direct
-
-
-def definir_volume(volume_0_a_100):
-    v = max(0, min(100, volume_0_a_100))
-    pygame.mixer.music.set_volume(v / 100)
-
-
-def position_actuelle():
-    if not _etat["chemin"]:
-        return 0
-    if _etat["en_lecture"]:
-        return max(0, time.time() - _etat["debut"])
-    return _etat["position_pause"]
-
-
-def obtenir_etat():
-    return {
-        "chemin": _etat["chemin"],
-        "en_lecture": bool(_etat["en_lecture"] and pygame.mixer.music.get_busy()),
-        "position": round(position_actuelle(), 1),
-        "duree": round(_etat["duree"], 1),
-    }
 
 
 def telecharger(url, format_cible, dossier_destination):
@@ -183,6 +89,10 @@ def telecharger(url, format_cible, dossier_destination):
             "noplaylist": True,
             "quiet": True,
         }
+
+    cookies = os.environ.get("YTDLP_COOKIES")  # chemin d'un cookies.txt (facultatif)
+    if cookies and os.path.isfile(cookies):
+        options["cookiefile"] = cookies
 
     try:
         with yt_dlp.YoutubeDL(options) as ydl:

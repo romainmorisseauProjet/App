@@ -1,0 +1,110 @@
+/* --- Module Musique --- */
+/* Ce fichier ne contient QUE les styles de l'onglet Musique.
+   Les variables de couleur viennent de style.css, chargé avant celui-ci. */
+
+/* Le panneau a deux zones empilées : le contenu scrollable, et le lecteur
+   fixé en bas — comme la barre de lecture de Spotify. */
+.tab-panel[data-panel="musique"] { flex-direction: column; }
+
+.muz-wrap { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 18px 26px 16px; gap: 16px; overflow: auto; }
+
+.muz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.muz-title { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 600; }
+.muz-sub { font-size: 12px; color: var(--text-faint); margin-top: 3px; word-break: break-all; }
+.muz-folder-btn {
+  flex-shrink: 0; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-line);
+  background: none; color: var(--text-dim); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: all 0.18s;
+}
+.muz-folder-btn:hover { border-color: var(--border-glow); color: var(--accent-cyan); }
+
+/* Zone de téléchargement YouTube */
+.muz-download {
+  background: var(--bg-panel); border: 1px solid var(--border-line); border-radius: 12px; padding: 14px 16px;
+}
+.muz-download input {
+  width: 100%; background: var(--bg-panel-2); border: 1px solid var(--border-line); border-radius: 8px;
+  padding: 10px 12px; color: var(--text-bright); font-family: inherit; font-size: 13.5px; outline: none;
+}
+.muz-download input:focus { border-color: var(--border-glow); }
+.muz-download input::placeholder { color: var(--text-faint); }
+.muz-download-actions { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.muz-format-btn {
+  padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border-line); background: none;
+  color: var(--text-dim); font-family: inherit; font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+}
+.muz-format-btn.active { color: var(--accent-cyan); background: rgba(47,127,255,0.1); border-color: rgba(95,217,255,0.25); }
+.muz-dl-btn {
+  margin-left: auto; padding: 8px 18px; border-radius: 8px; border: none;
+  background: var(--accent-blue); color: #fff; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: filter 0.15s;
+}
+.muz-dl-btn:hover { filter: brightness(1.1); }
+.muz-dl-btn:disabled { opacity: 0.5; cursor: default; }
+.muz-download-result { font-size: 12px; color: var(--text-faint); margin-top: 8px; min-height: 16px; }
+.muz-download-result.error { color: #ff5470; }
+.muz-download-result.ok { color: var(--accent-cyan); }
+
+/* Liste de morceaux */
+.muz-liste { display: flex; flex-direction: column; gap: 4px; }
+.muz-empty { color: var(--text-faint); font-size: 13px; padding: 30px 4px; text-align: center; }
+
+.muz-morceau {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 9px;
+  cursor: pointer; transition: background 0.15s;
+}
+.muz-morceau:hover { background: rgba(95,217,255,0.06); }
+.muz-morceau.actif { background: rgba(47,127,255,0.12); }
+.muz-morceau-icone {
+  width: 34px; height: 34px; border-radius: 7px; background: var(--bg-panel-2);
+  display: flex; align-items: center; justify-content: center; color: var(--text-dim); flex-shrink: 0;
+}
+.muz-morceau.actif .muz-morceau-icone { color: var(--accent-cyan); }
+.muz-morceau-icone svg { width: 15px; height: 15px; }
+.muz-morceau-infos { flex: 1; min-width: 0; }
+.muz-morceau-titre { font-size: 13.5px; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.muz-morceau.actif .muz-morceau-titre { color: var(--accent-cyan); }
+.muz-morceau-artiste { font-size: 11.5px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.muz-morceau-duree { font-size: 12px; color: var(--text-faint); flex-shrink: 0; }
+
+/* Barre de lecteur, fixée en bas du panneau */
+.muz-player {
+  flex-shrink: 0; display: flex; align-items: center; gap: 20px;
+  padding: 12px 26px; border-top: 1px solid var(--border-line); background: var(--bg-panel-2);
+}
+.muz-player-info { width: 180px; flex-shrink: 0; min-width: 0; }
+.muz-player-titre { font-size: 13px; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.muz-player-artiste { font-size: 11.5px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.muz-player-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.muz-ctrl-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: none; background: none;
+  color: var(--text-dim); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: color 0.15s;
+}
+.muz-ctrl-btn svg { width: 16px; height: 16px; }
+.muz-ctrl-btn:hover { color: var(--text-bright); }
+.muz-play-btn {
+  width: 38px; height: 38px; background: var(--accent-cyan); color: var(--bg-void);
+}
+.muz-play-btn svg { width: 17px; height: 17px; }
+.muz-play-btn:hover { color: var(--bg-void); filter: brightness(1.1); }
+
+.muz-progress-row { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.muz-time { font-size: 11px; color: var(--text-faint); width: 34px; flex-shrink: 0; }
+.muz-time:last-child { text-align: right; }
+.muz-progress, .muz-volume {
+  -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px;
+  background: var(--border-line); outline: none; cursor: pointer;
+}
+.muz-progress { flex: 1; }
+.muz-progress::-webkit-slider-thumb, .muz-volume::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-cyan); cursor: pointer;
+}
+
+.muz-volume-row { display: flex; align-items: center; gap: 8px; width: 110px; flex-shrink: 0; }
+.muz-volume-icon { width: 15px; height: 15px; color: var(--text-faint); flex-shrink: 0; }
+.muz-volume { width: 80px; }
+
+@media (max-width: 760px) {
+  .muz-player { flex-wrap: wrap; }
+  .muz-volume-row { display: none; }
+}
